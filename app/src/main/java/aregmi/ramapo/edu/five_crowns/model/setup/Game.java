@@ -11,11 +11,7 @@ public class Game {
     private static int human_player_points;
     private static int computer_player_points;
     private int round_number;
-    //private Human human;
-    //private Computer computer;
-    //private String next_player;
     private boolean read_from_file;
-    //private Deck deck;
 
     public Game(){
         human_player_points = 0;
@@ -26,11 +22,19 @@ public class Game {
         read_from_file = readfromfile;
     }
 
-    public Round startNewGame(){
-        setReadFromFile(false);
+    public Round startRound(int round_num){
         Round round = new Round();
-        round.setReadFromFile(false);
+        round.setRoundNum(round_num);
         return round;
+    }
+
+
+    public void addHumanTotalPoints(int points){
+        human_player_points += points;
+    }
+
+    public void addComputerTotalPoints(int points){
+        computer_player_points += points;
     }
 
     public int getHumanTotalPoints(){

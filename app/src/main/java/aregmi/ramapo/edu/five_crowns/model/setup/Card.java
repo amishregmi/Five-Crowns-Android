@@ -6,6 +6,18 @@ public class Card {
 
     private String suit;
 
+    public Card(){
+
+    }
+
+    public void setFace(String face){
+        this.face = face;
+    }
+
+    public void setSuit(String suit){
+        this.suit = suit;
+    }
+
     public Card(String face, String suit){
         this.face = face;
         this.suit = suit;

@@ -42,6 +42,7 @@ public class StartActivity extends AppCompatActivity {
                         intent.putExtra("round", 1);
                         intent.putExtra("next_player", toss_winner);
                         intent.putExtra("read_from_file", false);
+                        intent.putExtra("state", "new");
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }
@@ -75,7 +76,8 @@ public class StartActivity extends AppCompatActivity {
             winner = "Computer";
         }
 
-        return winner;
+        //TODO -> MAKE THIS RANDOM
+        return "Computer";
     }
 
 }

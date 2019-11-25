@@ -1,12 +1,17 @@
 package aregmi.ramapo.edu.five_crowns.view;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,21 @@ import aregmi.ramapo.edu.five_crowns.model.setup.Round;
 public class MainGameActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Round round;
+    private Game game;
+    private TextView human_points_textview;
+    private TextView computer_points_textview;
+    private Button get_help_button;
+    private Button assemble_cards_button;
+    private Button log_button;
+    private boolean verify_goout_human;
+    private boolean verify_goout_computer;
+    private boolean human_picked_card;
+    private String next_player;
+    private int round_num;
+    private boolean read_from_file;
+    private boolean verify_goout_first, verify_goout_second;
+    private ImageView imageview;
+    private String help_reason = "";
     //private Human human = new Human();
     //private Computer computer = new Computer();
 
@@ -31,59 +51,199 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_game);
+        game = new Game();
 
-        int round_num = getIntent().getIntExtra("round",1);
-        String next_player = getIntent().getStringExtra("next_player");
-        boolean read_from_file = getIntent().getBooleanExtra("read_from_file", false);
+        //NEW GAME INTENTS
+        round_num = getIntent().getIntExtra("round",1);
+        next_player = getIntent().getStringExtra("next_player");
+        read_from_file = getIntent().getBooleanExtra("read_from_file", false);
+        String game_state = getIntent().getStringExtra("state");
 
-        if (read_from_file == false && round_num == 1){
-            Game new_game = new Game();
-            round = new_game.startNewGame();
-            round.setRoundNum(1);
-            Human human = new Human();
-            round.setHumanPlayer(human);
-            Computer computer = new Computer();
-            round.setComputerPlayer(computer);
-            round.setPlayerList(next_player);
-            round.dealForRound();
-            human.printCurrentHand();
-            computer.printCurrentHand();
-            System.out.println("DRAW PILE IS: "+ round.getDrawPile().split("\\s+").length);//String draw_pile = round.getDrawPile();
-            //String discard_pile = round.getDiscardPile();
-            getCurrentRoundDetails(human, computer);
+        //FINDING VIEWS
+        human_points_textview = findViewById(R.id.human_points_textview);
+        computer_points_textview = findViewById(R.id.computer_points_textview);
+        human_points_textview.setText("HUMAN TOTAL POINTS: " + game.getHumanTotalPoints());
+        computer_points_textview.setText("COMPUTER TOTAL POINTS: "+ game.getComputerTotalPoints());
+        get_help_button = findViewById(R.id.get_help_button);
+        assemble_cards_button = findViewById(R.id.assemble_cards_button);
+        log_button = findViewById(R.id.log_button);
+
+        get_help_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (human_picked_card == false){
+                    help_reason = round.getHumanPlayer().pickCardHelp();
+                }
+
+                else{
+                    help_reason = round.getHumanPlayer().dropCardHelp();
+                }
+
+                Toast.makeText(getApplicationContext(), help_reason, Toast.LENGTH_LONG ).show();
+            }
+        });
+
+
+
+        if (read_from_file == false){
+
+            setUpRound();
+        }
+    }
+
+    private void setUpRound() {
+        round = game.startRound(round_num);
+        Human human = round.getHumanPlayer();
+        Computer computer = round.getComputerPlayer();
+        verify_goout_human = false;
+        verify_goout_computer = false;
+        human_picked_card = false;
+        round.setPlayerList(next_player);
+        round.dealForRound();
+        getCurrentRoundDetails();
+
+        if (next_player.equals("Computer")) {
+            makeComputerMove();
+            //makeHumanMove();
+        }
+
+        else if (next_player.equals("Human")) {
+            makeHumanMove();
+            //makeComputerMove();
+        }
+
+        if (verify_goout_computer && !verify_goout_human){
+            //makeHumanMove();
+            game.addHumanTotalPoints(round.getHumanPlayer().getHandScore());
+
+        }
+
+        else if (!verify_goout_computer && verify_goout_human){
+            //makeComputerMove();
+            game.addComputerTotalPoints(round.getComputerPlayer().getHandScore());
+
+        }
+
+        getCurrentRoundDetails();
+    }
+
+    private void disableHumanButtons() {
+        get_help_button.setEnabled(false);
+        assemble_cards_button.setEnabled(false);
+    }
+
+    private void enableHumanButtons(){
+        get_help_button.setEnabled(true);
+        assemble_cards_button.setEnabled(true);
+        //String reason;
+
+    }
+
+    private void makeComputerMove(){
+        getCurrentRoundDetails();
+        disableHumanButtons();
+        round.getComputerPlayer().pickCard();
+        //getCurrentRoundDetails();
+        next_player = "Human";
+        human_picked_card = false;
+        getCurrentRoundDetails();
+        Toast.makeText(getApplicationContext(), round.getComputerPlayer().getComputerMove(), Toast.LENGTH_LONG ).show();
+
+
+        if (round.getComputerPlayer().goOut()){
+            verify_goout_computer = true;
+            Toast.makeText(getApplicationContext(), "COMPUTER WENT OUT!", Toast.LENGTH_LONG).show();
+        }
+
+        if (!verify_goout_human){
+            makeHumanMove();
+        }
+
+        else {
+            game.addComputerTotalPoints(round.getComputerPlayer().getHandScore());
+            human_points_textview.setText("HUMAN TOTAL POINTS: " + game.getHumanTotalPoints());
+            computer_points_textview.setText("COMPUTER TOTAL POINTS: "+ game.getComputerTotalPoints());
+
+            round_num++;
+            next_player = "Human";
+            setUpRound();
 
         }
 
 
     }
+
+    private void makeHumanMove() {
+        enableHumanButtons();
+        //TODO -> Disable clickable from human hand. Allow clickable from top of draw pile and discard pile
+        getCurrentRoundDetails();
+
+    }
+
 
     //TODO -> CHANGE THIS
     @Override
     public void onClick(View view){
         Drawable select = getResources().getDrawable(R.drawable.selected);
         view.setBackground(select);
+        String card_selected = (String)view.getTag();
+        Card controller_card_selected = round.convertToControllerCard(card_selected);
+        System.out.println("CARD SELECTED IS: "+ card_selected);
+        System.out.println("CONTROLLER CONVERSION IS:  " + controller_card_selected.cardToString());
+
+        if (controller_card_selected.cardToString().equals(Deck.getTopDrawCard().cardToString())){
+            System.out.println("TOP DRAW CARD");
+            round.getHumanPlayer().addCardToHand(Deck.takeTopDrawCard());
+            human_picked_card = true;
+            getCurrentRoundDetails();
+        }
+
+        else if (controller_card_selected.cardToString().equals(Deck.getTopDiscardCard().cardToString())){
+            round.getHumanPlayer().addCardToHand(Deck.takeTopDiscardCard());
+            human_picked_card = true;
+            getCurrentRoundDetails();
+        }
+
+        else{
+            //TODO -> DROP CARD
+            //human_picked_card = false;
+            getCurrentRoundDetails();
+            round.getHumanPlayer().dropCard(controller_card_selected.cardToString());
+            next_player = "Computer";
+            getCurrentRoundDetails();
+
+            if (round.getHumanPlayer().goOut()){
+                verify_goout_human = true;
+                Toast.makeText(getApplicationContext(), "HUMAN WENT OUT!", Toast.LENGTH_LONG ).show();
+            }
+
+            if (!verify_goout_computer){
+                makeComputerMove();
+            }
+
+            else{
+                game.addHumanTotalPoints(round.getHumanPlayer().getHandScore());
+                human_points_textview.setText("HUMAN TOTAL POINTS: " + game.getHumanTotalPoints());
+                computer_points_textview.setText("COMPUTER TOTAL POINTS: "+ game.getComputerTotalPoints());
+                round_num++;
+                next_player = "Computer";
+                setUpRound();
+            }
+        }
 
     }
 
 
+    private void getCurrentRoundDetails() {
 
-    private void getCurrentRoundDetails(Human human, Computer computer) {
-        System.out.println("INSIDE getCurrentRoundDetails");
-        human.printCurrentHand();
-        computer.printCurrentHand();
-        List<String> draw_pile = convertToDrawableString(round.getDrawPile());
-        //System.out.println("DRAW PILE IS: "+ round.getDrawPile());
-        System.out.println("DISCARD PILE IS: "+ round.getDiscardPile());
-        //System.out.println("HUMAN HAND IS: "+ human.getPlayerHandStr());
-        //System.out.println("COMPUTER HAND IS: "+ computer.getPlayerHandStr());
-        //System.out.println("DRAWABLE draw_pile is: "+ draw_pile);
-        List<String> discard_pile = convertToDrawableString(round.getDiscardPile());
-        System.out.println("LIST STRING DISCARD PILE : ");
-        for (String one: discard_pile){
-            System.out.println(one);
-        }
-        List<String> human_hand = convertToDrawableString(human.getPlayerHandStr());
-        List<String> computer_hand = convertToDrawableString(computer.getPlayerHandStr());
+        //List<String> draw_pile = convertToDrawableString(round.getDrawPile());
+        List<String> draw_pile = round.convertToDrawableString(round.getDrawPile());
+        List<String> discard_pile = round.convertToDrawableString(round.getDiscardPile());
+
+
+        List<String> human_hand = round.convertToDrawableString(round.getHumanHand());
+        List<String> computer_hand = round.convertToDrawableString(round.getComputerHand());
 
         LinearLayout linearLayout1 = (LinearLayout) findViewById(R.id.computer_hand_linearlayout);
         linearLayout1.removeAllViews();
@@ -106,63 +266,46 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
     private void addCardToView(LinearLayout linearLayout, List<String> cards_to_display, String card_belonging_to) {
 
+        int index_pos = 0;
+
         for (String onecard : cards_to_display){
-            ImageView imageview = new ImageView(this);
+            imageview = new ImageView(this);
             LinearLayout.LayoutParams layout_params = new LinearLayout.LayoutParams(210, 250);
-            layout_params.setMargins(20, 10, 20, 10);
+            layout_params.setMargins(10, 10, 10, 10);
             imageview.setLayoutParams(layout_params);
 
             Context context = linearLayout.getContext();
             int id = context.getResources().getIdentifier(onecard, "drawable", context.getPackageName());
+            //System.out.println("ID IS: "+ id);
             imageview.setImageResource(id);
 
             imageview.setTag(onecard);
             imageview.setPadding(5, 5,5,5);
             imageview.setId(id);
 
-            if (card_belonging_to.equals("Human")){
+            if (card_belonging_to.equals("Human") && human_picked_card == true && next_player.equals("Human")){
                 imageview.setClickable(true);
                 imageview.setOnClickListener(this);
             }
 
+            else if (card_belonging_to.equals("DrawPile") && index_pos == 0 && human_picked_card == false && next_player.equals("Human")){
+                //System.out.println("INSIDE HERE");
+                imageview.setClickable(true);
+                imageview.setOnClickListener(this);
+            }
+
+            else if (card_belonging_to.equals("DiscardPile") && index_pos == 0 && human_picked_card == false && next_player.equals("Human")){
+                //System.out.println("INSIDE HERE 2");
+                imageview.setClickable(true);
+                imageview.setOnClickListener(this);
+            }
 //            else if (card_belonging_to.equals(""))
 
             linearLayout.addView(imageview);
 
+            index_pos++;
         }
 
-    }
-
-    private List<String> convertToDrawableString(String givenString) {
-        String[] splitStr = givenString.split("\\s+");
-        String combined = "";
-        List<String> cards = new ArrayList<>();
-        cards.clear();
-
-        for (String one: splitStr){
-            //System.out.println(one);
-            if (one.equals("J1") || one.equals("J2") || one.equals("J3")){
-                //System.out.println("INSIDE IF");
-                combined += one.toLowerCase()+ " ";
-                //System.out.println(combined);
-            }
-            else{
-                if (!one.isEmpty()){
-                    char first = one.charAt(1);
-                    char second = one.charAt(0);
-                    String reversed = (Character.toString(first)).concat(Character.toString(second));
-                    combined += reversed.toLowerCase()+" ";
-                }
-            }
-        }
-
-        splitStr = combined.split("\\s+");
-
-        for (String one: splitStr){
-            cards.add(one);
-        }
-
-        return cards;
     }
 
 

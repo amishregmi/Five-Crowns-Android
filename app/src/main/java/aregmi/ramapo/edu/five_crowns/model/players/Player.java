@@ -206,7 +206,9 @@ public class Player {
         return present_hand_str;
     }
 
-    private boolean checkBook (Vector<Card> handToCheck){
+    //TODO -> CHANGE TO PRIVATE
+
+    public boolean checkBook (Vector<Card> handToCheck){
         if (handToCheck.size() < 3){
             return false;
         }
@@ -239,7 +241,9 @@ public class Player {
 
     }
 
-    private boolean checkRun(Vector<Card> current_hand_to_check){
+
+    //TODO -> CHANGE TO PRIVATE
+    public boolean checkRun(Vector<Card> current_hand_to_check){
 
         if (current_hand_to_check.size() < 3){
             return false;
@@ -247,6 +251,14 @@ public class Player {
 
         int total_applicable_wildcards = totalApplicableWildcardsNum(current_hand_to_check);
         Vector<String> temp = handWithoutWildcards(current_hand_to_check);
+
+        //System.out.println("TOTAL APPLICABLE WILDCARDS IS: "+ total_applicable_wildcards);
+        //System.out.println("HAND WITHOUT WILDCARDS : ");
+        //Iterator val = temp.iterator();
+        //while (val.hasNext()){
+        //    System.out.print((String)val.next()+ " ");
+        //}
+        //System.out.println("");
 
         if (temp.size() <= 1){
             return true;
@@ -258,8 +270,11 @@ public class Player {
 
         while(value.hasNext()){
             String current_tempandsuit = (String) value.next();
+            //System.out.println("CURRENT TEMP AND SUIT SHOULD BE EITHER 4H OR XH " + current_tempandsuit);
             char suit = current_tempandsuit.charAt(1);
+            //System.out.println("CHAR SUIT SHOULD BE H "+ suit);
             String s = String.valueOf(suit);
+            //System.out.println("STRING S SHOULD BE H "+ s);
 
             if (!(temp_cards.contains(current_tempandsuit))){
                 temp_cards.add(current_tempandsuit);
@@ -274,11 +289,13 @@ public class Player {
             }
         }
 
+
         if (temp_suits.size() > 1){
             return false;
         }
 
         Vector<Integer> face_values = new Vector<Integer>();
+        value = temp.iterator();
 
         while(value.hasNext()){
             String current_tempandsuit = (String) value.next();
@@ -324,10 +341,12 @@ public class Player {
     private int facesMaxDiff(Vector<Integer> face_values, int size) {
         int start = -5;
         int end = -5;
-        int max_diff = face_values.get(1) - face_values.get(0);
+        //int max_diff = face_values.get(1) - face_values.get(0);
+        int max_diff = -5000;
 
         for (int i = 0; i< size; i++){
             for (int j = i + 1; j < size; j++){
+
                 if (face_values.get(j) - face_values.get(i) > max_diff){
                     max_diff = face_values.get(j) - face_values.get(i);
                     end = face_values.get(j);
@@ -344,9 +363,19 @@ public class Player {
         return max_diff;
     }
 
-    public void pickCardHelp(){
+    public String pickCardHelp(){
         System.out.println("Virtual function pickCardHelp needs to be overwritten in child class");
+        return "";
     }
+
+    public void pickCard(){
+        System.out.println("VIRTUAL FUNCTION PICKCARD");
+    }
+
+    public void dropCard(){
+        System.out.println("VIRTUAL FUNCTION DROPCARD");
+    }
+
 
 
     public boolean goOut(){
@@ -358,6 +387,9 @@ public class Player {
         bestBookRunCombination(current_player_hand);
 
         if (hand_score == 0){
+            //System.out.println("GOING OUT WITH");
+            //printCurrentHand();
+
             return true;
         }
 
@@ -520,7 +552,7 @@ public class Player {
                 Vector<String> current_combination = new Vector<String>();
                 for (int i = start_index_current_combination; i < (numofcards_in_current_combination + start_index_current_combination); i++) {
                     if (i < current_player_hand_str.size()) {
-                        current_combination.add(current_player_hand_str.elementAt(i));
+                        current_combination.add(current_player_hand_str.get(i));
                     }
                 }
 
@@ -555,7 +587,7 @@ public class Player {
                     Vector<String> current_combination = new Vector<String>();
                     for (int i = start_index_current_combination; i< (numofcards_in_current_combination + start_index_current_combination); i++){
                         if ( i < current_suit_cards.size()){
-                            current_combination.add(current_suit_cards.elementAt(i));
+                            current_combination.add(current_suit_cards.get(i));
                         }
                     }
 
