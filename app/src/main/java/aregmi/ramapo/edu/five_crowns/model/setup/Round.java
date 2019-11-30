@@ -34,10 +34,17 @@ public class Round {
 
     public void setReadFromFile(boolean value){
         readFromFile = value;
+
+    }
+
+    public int getRoundNum(){
+        return roundNumber;
     }
 
     public void setRoundNum(int round_number){
         roundNumber = round_number;
+        human_player.setCurrentRoundNum(roundNumber);
+        computer_player.setCurrentRoundNum(roundNumber);
     }
 
     public void setHumanPlayer(Human human){
@@ -127,15 +134,6 @@ public class Round {
 
         }
 
-        System.out.println("WHEN ROUND STARTED: ");
-        System.out.println("DRAW PILE: ");
-        System.out.println(Deck.getCurrentDrawPile());
-        System.out.println("DISCARD PILE: ");
-        System.out.println(Deck.getCurrentDiscardPile());
-        System.out.println("HUMAN HAND: ");
-        human_player.printCurrentHand();
-        System.out.println("COMPUTER HAND: ");
-        computer_player.printCurrentHand();
 
     }
 
@@ -215,7 +213,9 @@ public class Round {
         return card;
     }
 
-
+    public String getNextPlayer(){
+        return player_names[next_player_index];
+    }
 
 
 }

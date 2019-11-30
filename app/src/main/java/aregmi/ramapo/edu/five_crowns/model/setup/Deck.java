@@ -17,6 +17,7 @@ public class Deck {
     }
 
     static private void resetDeck() {
+        System.out.println("reset Deck() called");
         drawPile.clear();
         discardPile.clear();
         //C, D, H,S done
@@ -48,6 +49,7 @@ public class Deck {
 
 
     static public Vector<Card> dealCards(int roundNumber){
+        System.out.println("dealCards in deck called");
         int current_round_par = roundNumber;
         resetDeck();
 
@@ -80,6 +82,7 @@ public class Deck {
     }
 
     static public Card getTopDiscardCard(){
+        //System.out.println("GET TOP DISCARD CARD IN DECK CALLED");
         if (!discardPile.isEmpty()){
             return discardPile.firstElement();
         }
@@ -87,6 +90,7 @@ public class Deck {
     }
 
     static public Card getTopDrawCard(){
+        //System.out.println("GET TOP DRAW CARD IN DECK CALLED");
         if (!drawPile.isEmpty()){
             return drawPile.firstElement();
         }
@@ -94,6 +98,7 @@ public class Deck {
     }
 
     static public Card takeTopDiscardCard(){
+        //System.out.println("TAKE TOP DISCARD CARD IN DECK CALLED");
         if (!discardPile.isEmpty()){
             Card topcard = discardPile.firstElement();
             discardPile.removeElementAt(0);
@@ -103,6 +108,7 @@ public class Deck {
     }
 
     static public Card takeTopDrawCard(){
+        //System.out.println("TAKE TOP DRAW CARD IN DECK CALLED");
         if (!drawPile.isEmpty()){
             Card topcard = drawPile.firstElement();
             drawPile.removeElementAt(0);
@@ -111,36 +117,34 @@ public class Deck {
         return null;
     }
 
-    static public void pushToDiscardPile(Card card){
+    static public void pushToDiscardPile(Card card)
+    {
+        //System.out.println("PUSH TO DISCARD PILE CALLED DECK");
         discardPile.add(0, card);
     }
 
     static public void setDrawPile(Vector<String> draw_Pile){
         drawPile.clear();
-        Iterator iterator = draw_Pile.iterator();
-        char face, suit;
-        while (iterator.hasNext()){
-            face = iterator.next().toString().charAt(0);
-            suit = iterator.next().toString().charAt(1);
-            String s_face = String.valueOf(face);
-            String s_suit = String.valueOf(suit);
-            Card current_card = new Card(s_face, s_suit);
-            drawPile.add(0, current_card);
+        String face, suit;
+        for(String one: draw_Pile){
+            face = ((String) one).substring(0,1);
+            suit = ((String) one).substring(1,2);
+            Card card = new Card(face, suit);
+            drawPile.add(card);
         }
     }
 
     static public void setDiscardPile(Vector<String> discard_Pile){
+        //System.out.print("SET DISCARD PILE CALLED with parameter: ");
         discardPile.clear();
-        Iterator iterator = discard_Pile.iterator();
-        char face, suit;
-        while (iterator.hasNext()){
-            face = iterator.next().toString().charAt(0);
-            suit = iterator.next().toString().charAt(1);
-            String s_face = String.valueOf(face);
-            String s_suit = String.valueOf(suit);
-            Card current_card = new Card(s_face, s_suit);
-            discardPile.add(0, current_card);
+        String face, suit;
+        for(String one: discard_Pile){
+            face = ((String) one).substring(0,1);
+            suit = ((String) one).substring(1,2);
+            Card card = new Card(face, suit);
+            discardPile.add(card);
         }
+        //System.out.println("DISCARD PILE SET IS: "+ getCurrentDiscardPile());
     }
 
     static public String getCurrentDrawPile(){
@@ -157,6 +161,7 @@ public class Deck {
     }
 
     static public String getCurrentDiscardPile(){
+        //System.out.println("GET CURRENT DISCARD PILE CALLED");
         String current_discard_pile = "";
         Iterator iterator = discardPile.iterator();
         while (iterator.hasNext()) {

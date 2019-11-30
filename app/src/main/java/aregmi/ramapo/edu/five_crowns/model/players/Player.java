@@ -93,15 +93,17 @@ public class Player {
     }
 
     public void setCurrentRoundNum(int roundNumber){
+
+        //System.out.println("round number in player set to: "+ roundNumber);
         current_round_num = roundNumber;
     }
 
     public void printCurrentHand(){
-        System.out.println("The current player hand is: ");
+        //System.out.println("The current player hand is: ");
         Iterator value = current_player_hand.iterator();
         while (value.hasNext()){
             Card current_card = (Card) value.next();
-            System.out.println(current_card.cardToString());
+            //System.out.println(current_card.cardToString());
         }
     }
 
@@ -144,11 +146,13 @@ public class Player {
     }
 
     public boolean checkIfWildcard(String current_card_str) {
+        //System.out.println("CURRENT WILDCARD IS: " + (current_round_num+2));
 
         //System.out.println("INSIDE CHECKIFWILDCARD ROUND NUMB IS "+ current_round_num);
         if (Character.isDigit(current_card_str.charAt(0))){
             //System.out.println("INSIDE IF FIRST CHAR IS NUMBER");
             int number = Character.getNumericValue(current_card_str.charAt(0));
+            //System.out.println("NUMBER IS: "+ number);
             if (number == (current_round_num + 2)){
                 return true;
             }

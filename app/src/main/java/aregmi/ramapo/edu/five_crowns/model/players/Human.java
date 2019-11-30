@@ -59,8 +59,6 @@ public class Human extends  Player{
 
         }
 
-        System.out.print("Recommendation: ");
-        System.out.println(reason);
         return reason;
     }
 

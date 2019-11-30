@@ -72,13 +72,13 @@ public class Computer extends Player{
 
         }
 
-        System.out.println(reason);
+        //System.out.println(reason);
         dropCard();
     }
 
     public void dropCard(){
         String reason = "";
-        System.out.println("Before dropping card, ");
+        //System.out.println("Before dropping card, ");
         printCurrentHand();
         Vector<Integer> points_after_drop = new Vector<Integer>();
         int current_index = 0;
@@ -166,12 +166,6 @@ public class Computer extends Player{
         computer.addCardToHand(second);
         computer.addCardToHand(third);
 
-        System.out.println("CHECK BOOK "+ computer.checkBook(computer.current_player_hand));
-
-        System.out.println("CHECK RUN "+ computer.checkRun(computer.current_player_hand));
-
-        System.out.println(computer.goOut());
-        System.out.println(computer.getHandScore());
 
 
     }

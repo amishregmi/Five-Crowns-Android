@@ -39,11 +39,12 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     private boolean verify_goout_computer;
     private boolean human_picked_card;
     private String next_player;
+    private String file_name;
     private int round_num;
     private boolean read_from_file;
-    private boolean verify_goout_first, verify_goout_second;
     private ImageView imageview;
     private String help_reason = "";
+    private TextView computer_move_explanation;
     //private Human human = new Human();
     //private Computer computer = new Computer();
 
@@ -54,19 +55,21 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         game = new Game();
 
         //NEW GAME INTENTS
+        read_from_file = getIntent().getBooleanExtra("read_from_file", false);
+
         round_num = getIntent().getIntExtra("round",1);
         next_player = getIntent().getStringExtra("next_player");
-        read_from_file = getIntent().getBooleanExtra("read_from_file", false);
-        String game_state = getIntent().getStringExtra("state");
+
 
         //FINDING VIEWS
         human_points_textview = findViewById(R.id.human_points_textview);
         computer_points_textview = findViewById(R.id.computer_points_textview);
-        human_points_textview.setText("HUMAN TOTAL POINTS: " + game.getHumanTotalPoints());
-        computer_points_textview.setText("COMPUTER TOTAL POINTS: "+ game.getComputerTotalPoints());
+        human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
+        computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
         get_help_button = findViewById(R.id.get_help_button);
-        assemble_cards_button = findViewById(R.id.assemble_cards_button);
+        //assemble_cards_button = findViewById(R.id.assemble_cards_button);
         log_button = findViewById(R.id.log_button);
+        computer_move_explanation = findViewById(R.id.computer_move_explanation);
 
         get_help_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,18 +93,42 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
             setUpRound();
         }
+
+        else{
+            file_name = getIntent().getStringExtra("file_name");
+            //System.out.println("FILE NAME RECEIVED IN MAINGAMEACTIVITY IS: "+ file_name);
+            setUpRound();
+
+        }
     }
 
     private void setUpRound() {
-        round = game.startRound(round_num);
+        if (!read_from_file){
+            round = game.startRound(round_num);
+        }
+        else{
+            round = game.setRoundFromFile(file_name);
+        }
         Human human = round.getHumanPlayer();
         Computer computer = round.getComputerPlayer();
         verify_goout_human = false;
         verify_goout_computer = false;
         human_picked_card = false;
-        round.setPlayerList(next_player);
-        round.dealForRound();
+
+        if (!read_from_file){
+            round.setPlayerList(next_player);
+            round.dealForRound();
+        }
+
+        if (read_from_file){
+            next_player = round.getNextPlayer();
+            human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
+            computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
+            round_num = round.getRoundNum();
+        }
+
         getCurrentRoundDetails();
+
 
         if (next_player.equals("Computer")) {
             makeComputerMove();
@@ -130,12 +157,12 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
     private void disableHumanButtons() {
         get_help_button.setEnabled(false);
-        assemble_cards_button.setEnabled(false);
+//        assemble_cards_button.setEnabled(false);
     }
 
     private void enableHumanButtons(){
         get_help_button.setEnabled(true);
-        assemble_cards_button.setEnabled(true);
+        //assemble_cards_button.setEnabled(true);
         //String reason;
 
     }
@@ -143,12 +170,19 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     private void makeComputerMove(){
         getCurrentRoundDetails();
         disableHumanButtons();
-        round.getComputerPlayer().pickCard();
+
+        System.out.println("INSIDE MAKECOMPUTERMOVE");
+
+        if (!verify_goout_computer){
+            round.getComputerPlayer().pickCard();
+            Toast.makeText(getApplicationContext(), round.getComputerPlayer().getComputerMove(), Toast.LENGTH_LONG ).show();
+            computer_move_explanation.setText(round.getComputerPlayer().getComputerMove());
+
+        }
         //getCurrentRoundDetails();
         next_player = "Human";
         human_picked_card = false;
         getCurrentRoundDetails();
-        Toast.makeText(getApplicationContext(), round.getComputerPlayer().getComputerMove(), Toast.LENGTH_LONG ).show();
 
 
         if (round.getComputerPlayer().goOut()){
@@ -156,20 +190,28 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(getApplicationContext(), "COMPUTER WENT OUT!", Toast.LENGTH_LONG).show();
         }
 
+        System.out.println("VERIFY_GOOUT_HUMAN IS: "+ verify_goout_human);
+
         if (!verify_goout_human){
+            System.out.println("INSIDE MAKEHUMANMOVE");
             makeHumanMove();
         }
 
-        else {
+        else if (verify_goout_human || verify_goout_computer){
             game.addComputerTotalPoints(round.getComputerPlayer().getHandScore());
-            human_points_textview.setText("HUMAN TOTAL POINTS: " + game.getHumanTotalPoints());
-            computer_points_textview.setText("COMPUTER TOTAL POINTS: "+ game.getComputerTotalPoints());
-
-            round_num++;
+            game.addHumanTotalPoints(round.getHumanPlayer().getHandScore());
+            human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
+            computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
+            round_num = round_num + 1;
+            System.out.println("INCREASING ROUND NUMBER: ");
+            System.out.println("STARTING NEW ROUND: ");
+            System.out.println("round_num is: "+ round_num);
+            read_from_file = false;
             next_player = "Human";
             setUpRound();
 
         }
+
 
 
     }
@@ -178,6 +220,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         enableHumanButtons();
         //TODO -> Disable clickable from human hand. Allow clickable from top of draw pile and discard pile
         getCurrentRoundDetails();
+
+        //makeComputerMove();
 
     }
 
@@ -189,11 +233,11 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         view.setBackground(select);
         String card_selected = (String)view.getTag();
         Card controller_card_selected = round.convertToControllerCard(card_selected);
-        System.out.println("CARD SELECTED IS: "+ card_selected);
-        System.out.println("CONTROLLER CONVERSION IS:  " + controller_card_selected.cardToString());
+        //System.out.println("CARD SELECTED IS: "+ card_selected);
+        //System.out.println("CONTROLLER CONVERSION IS:  " + controller_card_selected.cardToString());
 
         if (controller_card_selected.cardToString().equals(Deck.getTopDrawCard().cardToString())){
-            System.out.println("TOP DRAW CARD");
+            //System.out.println("TOP DRAW CARD");
             round.getHumanPlayer().addCardToHand(Deck.takeTopDrawCard());
             human_picked_card = true;
             getCurrentRoundDetails();
@@ -208,6 +252,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         else{
             //TODO -> DROP CARD
             //human_picked_card = false;
+            System.out.println("INSIDE DROP CARD");
+
             getCurrentRoundDetails();
             round.getHumanPlayer().dropCard(controller_card_selected.cardToString());
             next_player = "Computer";
@@ -219,14 +265,17 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             }
 
             if (!verify_goout_computer){
+                System.out.println("SHOULD NOT BE INSIDE THIS");
                 makeComputerMove();
             }
 
             else{
+                System.out.println("STARTING NEW ROUND FROM HUMAN CLICK");
                 game.addHumanTotalPoints(round.getHumanPlayer().getHandScore());
-                human_points_textview.setText("HUMAN TOTAL POINTS: " + game.getHumanTotalPoints());
-                computer_points_textview.setText("COMPUTER TOTAL POINTS: "+ game.getComputerTotalPoints());
+                human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
+                computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
                 round_num++;
+                read_from_file = false;
                 next_player = "Computer";
                 setUpRound();
             }
