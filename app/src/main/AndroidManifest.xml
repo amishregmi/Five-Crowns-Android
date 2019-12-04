@@ -21,7 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.MainGameActivity"></activity>
+        <activity android:name=".view.MainGameActivity" />
+        <activity android:name=".view.GameCompleted"></activity>
     </application>
 
 </manifest>

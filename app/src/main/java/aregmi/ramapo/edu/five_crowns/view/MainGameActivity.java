@@ -64,7 +64,7 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         //FINDING VIEWS
         human_points_textview = findViewById(R.id.human_points_textview);
         computer_points_textview = findViewById(R.id.computer_points_textview);
-        human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
+        human_points_textview.setText("ROUND: " + round_num +"  HUMAN POINTS: " + game.getHumanTotalPoints());
         computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
         get_help_button = findViewById(R.id.get_help_button);
         //assemble_cards_button = findViewById(R.id.assemble_cards_button);
@@ -103,6 +103,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setUpRound() {
+
+
         if (!read_from_file){
             round = game.startRound(round_num);
         }
@@ -122,9 +124,10 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
         if (read_from_file){
             next_player = round.getNextPlayer();
-            human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
-            computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
             round_num = round.getRoundNum();
+            human_points_textview.setText("ROUND: " + round_num+ "  HUMAN POINTS: " + game.getHumanTotalPoints());
+            computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
+
         }
 
         getCurrentRoundDetails();
@@ -200,19 +203,23 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         else if (verify_goout_human || verify_goout_computer){
             game.addComputerTotalPoints(round.getComputerPlayer().getHandScore());
             game.addHumanTotalPoints(round.getHumanPlayer().getHandScore());
-            human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
+            human_points_textview.setText("ROUND: " + round_num+ " HUMAN POINTS: " + game.getHumanTotalPoints());
             computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
             round_num = round_num + 1;
-            System.out.println("INCREASING ROUND NUMBER: ");
-            System.out.println("STARTING NEW ROUND: ");
-            System.out.println("round_num is: "+ round_num);
-            read_from_file = false;
-            next_player = "Human";
-            setUpRound();
 
+            if (round_num > 11){
+                Intent intent = new Intent(MainGameActivity.this, GameCompleted.class);
+                intent.putExtra("total_human_points", Integer.toString( game.getHumanTotalPoints()));
+                intent.putExtra("total_computer_points", Integer.toString(game.getComputerTotalPoints()));
+                startActivity(intent);
+            }
+
+            else{
+                read_from_file = false;
+                next_player = "Human";
+                setUpRound();
+            }
         }
-
-
 
     }
 
@@ -272,12 +279,22 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             else{
                 System.out.println("STARTING NEW ROUND FROM HUMAN CLICK");
                 game.addHumanTotalPoints(round.getHumanPlayer().getHandScore());
-                human_points_textview.setText("HUMAN POINTS: " + game.getHumanTotalPoints());
+                human_points_textview.setText("ROUND: "+round_num+" HUMAN POINTS: " + game.getHumanTotalPoints());
                 computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
                 round_num++;
-                read_from_file = false;
-                next_player = "Computer";
-                setUpRound();
+
+                if (round_num > 11){
+                    Intent intent = new Intent(MainGameActivity.this, GameCompleted.class);
+                    intent.putExtra("total_human_points", Integer.toString( game.getHumanTotalPoints()));
+                    intent.putExtra("total_computer_points", Integer.toString(game.getComputerTotalPoints()));
+                    startActivity(intent);
+                }
+
+                else{
+                    read_from_file = false;
+                    next_player = "Computer";
+                    setUpRound();
+                }
             }
         }
 

@@ -410,6 +410,7 @@ public class Player {
             int score = calculateSumOfCards(current_hand);
 
             if (score <= hand_score){
+                //min_branch.
                 recursive_bookrun_hands.clear();
                 recursive_bookrun_hands.add(current_hand_str);
                 Vector<String> temp = new Vector<String>();
@@ -458,7 +459,9 @@ public class Player {
                 hand_after_removal.add(current_card);
             }
             //TODO -> CHECK THIS. Without return
+            //add branch
             bestBookRunCombination(hand_after_removal);
+            //remove branch
         }
 
         //return 0;

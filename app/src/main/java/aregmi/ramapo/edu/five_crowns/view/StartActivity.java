@@ -122,7 +122,7 @@ public class StartActivity extends AppCompatActivity {
         }
 
         //TODO -> MAKE THIS RANDOM
-        return "Human";
+        return winner;
     }
 
 }
