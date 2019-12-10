@@ -17,6 +17,7 @@ public class Player {
     private int total_jokers_num;
     private int current_round_num;
     Vector<Vector<String>> recursive_bookrun_hands = new Vector<Vector<String>>();
+    Vector<Vector<String>> min_branch = new Vector<Vector<String>>();
 
 
     protected Vector<Card> current_player_hand = new Vector<Card>();
@@ -411,8 +412,8 @@ public class Player {
 
             if (score <= hand_score){
                 //min_branch.
-                recursive_bookrun_hands.clear();
-                recursive_bookrun_hands.add(current_hand_str);
+                //recursive_bookrun_hands.clear();
+                //recursive_bookrun_hands.add(current_hand_str);
                 Vector<String> temp = new Vector<String>();
                 Iterator value = current_player_hand_str.iterator();
                 while (value.hasNext()){
@@ -423,9 +424,13 @@ public class Player {
                 }
 
                 if (score < hand_score){
-                    System.out.println("child returning smallest sum changed to");
+                    //System.out.println("child returning smallest sum changed to");
                     child_returning_smallest_sum = temp;
-                    System.out.println(child_returning_smallest_sum);
+                    //System.out.println(child_returning_smallest_sum);
+                    //child_returning_smallest_sum
+                    min_branch.clear();
+                    min_branch.addAll(recursive_bookrun_hands);
+                    System.out.println("MIN_BRANCH IS: "+ recursive_bookrun_hands);
                 }
 
                 hand_score = score;
@@ -439,6 +444,9 @@ public class Player {
         while (value.hasNext()){
             Vector<Card> hand_after_removal = new Vector<Card>();
             Vector<String> temp_hand_after_removal = new Vector<String>(current_hand_str);
+
+            Vector<String> removed_hand = new Vector<String>();
+            //<Vector<String>> book_and_runs = new Vector<Vector<String>>();
             //temp_hand_after_removal = current_hand_str;
 
             Vector<Card> inside = ((Vector<Card>) value.next());
@@ -447,8 +455,10 @@ public class Player {
             while (inside_it.hasNext()){
                 Card current_s = (Card) inside_it.next();
                 String current = current_s.cardToString();
+                removed_hand.add(current);
                 temp_hand_after_removal.remove(current);
             }
+
 
             inside_it = temp_hand_after_removal.iterator();
             while (inside_it.hasNext()){
@@ -460,13 +470,20 @@ public class Player {
                 Card current_card = new Card(s_face, s_suit);
                 hand_after_removal.add(current_card);
             }
+
+            recursive_bookrun_hands.add(removed_hand);
             //TODO -> CHECK THIS. Without return
             //add branch
             bestBookRunCombination(hand_after_removal);
+            recursive_bookrun_hands.remove(removed_hand);
             //remove branch
         }
 
         //return 0;
+    }
+
+    public Vector<Vector<String>> getMinBranch(){
+        return min_branch;
     }
 
     private Vector<Vector<Card>> generatePossibleCombinations(Vector<String> current_player_hand_str) {

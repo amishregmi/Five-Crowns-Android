@@ -272,6 +272,9 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         }
 
         all_log_details+=round.getComputerPlayer().printAvailableBooksandRuns()+"\n";
+        all_log_details+= "THE BEST COMBINATION OF BOOKS AND RUNS IS: \n";
+        all_log_details+= round.getComputerPlayer().getMinBranch().toString()+"\n\n";
+
 
         System.out.println("VERIFY_GOOUT_HUMAN IS: "+ verify_goout_human);
 
@@ -367,6 +370,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             }
 
             all_log_details+=round.getHumanPlayer().printAvailableBooksandRuns()+"\n";
+            all_log_details+= "THE BEST COMBINATION OF BOOKS AND RUNS IS: \n";
+            all_log_details+= round.getHumanPlayer().getMinBranch().toString()+"\n\n";
 
             if (!verify_goout_computer){
                 System.out.println("SHOULD NOT BE INSIDE THIS");
