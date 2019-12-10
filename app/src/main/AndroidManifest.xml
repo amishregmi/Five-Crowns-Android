@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.MainGameActivity" />
-        <activity android:name=".view.GameCompleted"></activity>
+        <activity android:name=".view.GameCompleted" />
+        <activity android:name=".view.GameLog"></activity>
     </application>
 
 </manifest>

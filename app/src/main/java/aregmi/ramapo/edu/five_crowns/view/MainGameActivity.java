@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +55,12 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     private String help_reason = "";
     private TextView computer_move_explanation;
     private Button save_game_button;
+    private String all_log_details = "";
     //private Human human = new Human();
     //private Computer computer = new Computer();
+    private String log_dir;
+    private String log_file_name;
+    private File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +85,10 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         //assemble_cards_button = findViewById(R.id.assemble_cards_button);
         log_button = findViewById(R.id.log_button);
         computer_move_explanation = findViewById(R.id.computer_move_explanation);
+
+
+//        FileOutputStream write_stream = new FileOutputStream(file);
+
 
         get_help_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +125,26 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
                         .create();
 
                 dialog.show();
+            }
+        });
+
+        log_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                log_dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/saved_games/log";
+                log_file_name = "current_log.txt";
+                file = new File(log_dir, log_file_name);
+                try{
+                    PrintWriter writer = new PrintWriter(file);
+                    writer.print("");
+                    writer.close();
+
+                }catch (Exception ex){
+                    System.out.println(ex);
+                }
+                saveGameLog(MainGameActivity.this);
+                Intent intent = new Intent(MainGameActivity.this, GameLog.class);
+                startActivity(intent);
             }
         });
 
@@ -165,7 +194,13 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         human_points_textview.setText("ROUND: " + round_num +"  HUMAN POINTS: " + game.getHumanTotalPoints());
         computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
 
+        all_log_details+= "\n\n--------------------------------------\n";
+        all_log_details+="HUMAN POINTS: "+ game.getHumanTotalPoints()+"\n";
+        all_log_details+="COMPUTER POINTS: "+ game.getComputerTotalPoints()+"\n";
+        all_log_details+="------------------------------------------\n\n";
+
         getCurrentRoundDetails();
+
 
 
         if (next_player.equals("Computer")) {
@@ -208,6 +243,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void makeComputerMove(){
+        //all_log_details += writeLogDetails();
+        all_log_details += writeLogDetails();
         getCurrentRoundDetails();
         disableHumanButtons();
 
@@ -217,8 +254,11 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             round.getComputerPlayer().pickCard();
             Toast.makeText(getApplicationContext(), round.getComputerPlayer().getComputerMove(), Toast.LENGTH_LONG ).show();
             computer_move_explanation.setText(round.getComputerPlayer().getComputerMove());
-
         }
+
+        all_log_details += round.getComputerPlayer().getComputerMove()+"\n\n";
+        all_log_details += "After dropping card, hand is: "+ round.getComputerPlayer().getPlayerHandStr()+"\n\n";
+
         //getCurrentRoundDetails();
         next_player = "Human";
         human_picked_card = false;
@@ -229,8 +269,9 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             verify_goout_computer = true;
             Toast.makeText(getApplicationContext(), "COMPUTER WENT OUT!", Toast.LENGTH_LONG).show();
             computer_move_explanation.setText(round.getComputerPlayer().getComputerMove()+" and went out");
-
         }
+
+        all_log_details+=round.getComputerPlayer().printAvailableBooksandRuns()+"\n";
 
         System.out.println("VERIFY_GOOUT_HUMAN IS: "+ verify_goout_human);
 
@@ -264,10 +305,11 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void makeHumanMove() {
+        //all_log_details+= writeLogDetails();
         enableHumanButtons();
         //TODO -> Disable clickable from human hand. Allow clickable from top of draw pile and discard pile
         getCurrentRoundDetails();
-
+        all_log_details += writeLogDetails();
         //makeComputerMove();
 
     }
@@ -285,8 +327,10 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         System.out.println("String controller card selected is: "+ controller_card_selected_str);
         //System.out.println("CONTROLLER CONVERSION IS:  " + controller_card_selected.cardToString());
 
+
         if (controller_card_selected_str.equals(Deck.getTopDrawCard().cardToString())){
             //System.out.println("TOP DRAW CARD");
+            all_log_details += "Human picked "+ controller_card_selected_str+"\n";
             round.getHumanPlayer().addCardToHand(Deck.takeTopDrawCard());
             human_picked_card = true;
             getCurrentRoundDetails();
@@ -295,6 +339,7 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         //TODO -> Some error here. Attempt to invoke virtual method cardToString() on null object reference.
 
         else if(!Deck.getCurrentDiscardPile().isEmpty() && controller_card_selected_str.equals(Deck.getTopDiscardCard().cardToString())){
+            all_log_details += "Human picked "+ controller_card_selected_str+"\n";
             round.getHumanPlayer().addCardToHand(Deck.takeTopDiscardCard());
             human_picked_card = true;
             getCurrentRoundDetails();
@@ -309,6 +354,10 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
             getCurrentRoundDetails();
             round.getHumanPlayer().dropCard(controller_card_selected_str);
+            all_log_details += "Human dropped "+ controller_card_selected_str+"\n";
+            all_log_details+= "After dropping card, human hand is: "+ round.getHumanPlayer().getPlayerHandStr()+"\n\n";
+
+
             next_player = "Computer";
             getCurrentRoundDetails();
 
@@ -316,6 +365,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
                 verify_goout_human = true;
                 Toast.makeText(getApplicationContext(), "HUMAN WENT OUT!", Toast.LENGTH_LONG ).show();
             }
+
+            all_log_details+=round.getHumanPlayer().printAvailableBooksandRuns()+"\n";
 
             if (!verify_goout_computer){
                 System.out.println("SHOULD NOT BE INSIDE THIS");
@@ -420,6 +471,42 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             index_pos++;
         }
 
+    }
+
+    private void saveGameLog(Context context){
+        try{
+            FileOutputStream write_stream = new FileOutputStream(file, true);
+            write_stream.write(all_log_details.getBytes());
+            write_stream.close();
+
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
+
+    private String writeLogDetails() {
+        StringBuilder log_details = new StringBuilder();
+        log_details.append("***--------------------***\n\n");
+        log_details.append("DRAW PILE: \n");
+        log_details.append(Deck.getCurrentDrawPile()).append("\n\n");
+        log_details.append("DISCARD PILE: \n");
+        log_details.append(Deck.getCurrentDiscardPile()).append("\n\n");
+        log_details.append("ROUND NUMBER: ").append(round_num).append("\n\n");
+        log_details.append("Playing: ").append(next_player).append("\n");
+        //log_details.append(round.ge)
+        if (next_player.equals("Human")){
+            log_details.append("HUMAN HAND: \t");
+            log_details.append(round.getHumanPlayer().getPlayerHandStr()).append("\n");
+        }
+        else{
+            log_details.append("COMPUTER HAND: \t");
+            log_details.append(round.getComputerPlayer().getPlayerHandStr()).append("\n");
+        }
+        //log_details.append(Deck.get)
+
+        String log_detailss = log_details.toString();
+        return log_detailss;
     }
 
     private void saveGame(Context context, String file_name){

@@ -423,7 +423,9 @@ public class Player {
                 }
 
                 if (score < hand_score){
+                    System.out.println("child returning smallest sum changed to");
                     child_returning_smallest_sum = temp;
+                    System.out.println(child_returning_smallest_sum);
                 }
 
                 hand_score = score;
@@ -707,18 +709,24 @@ public class Player {
         return score;
     }
 
-    public void printAvailableBooksandRuns(){
+    public String printAvailableBooksandRuns(){
+        String return_val = "";
+        System.out.println("CHILD RETURNING SMALLEST SUM IS: ");
+        System.out.println(child_returning_smallest_sum);
         if (child_returning_smallest_sum.size() == 0){
-            System.out.println("No books or runs");
+            return "No books or runs";
         }
         else {
+            return_val+= "Books and runs are: \n";
             System.out.println("BOOKS AND RUNS ARE: ");
             Iterator value = child_returning_smallest_sum.iterator();
             while (value.hasNext()){
-                System.out.print((String) value.next()+"   ");
+                //System.out.print((String) value.next()+"   ");
+                return_val+= (String)value.next()+"   ";
             }
-            System.out.println("");
+            return_val+="\n";
         }
+        return return_val;
     }
 
     public int getHandScore(){
