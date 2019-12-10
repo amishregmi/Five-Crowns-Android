@@ -186,4 +186,9 @@ public class Game {
     }
 
 
+    public int getRoundNum(){
+        return round_number;
+    }
+
+
 }

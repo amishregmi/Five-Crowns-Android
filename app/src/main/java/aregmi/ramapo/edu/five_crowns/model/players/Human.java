@@ -119,6 +119,7 @@ public class Human extends  Player{
     }
 
     public void dropCard(String card_to_drop){
+        System.out.println("INSIDE human.dropCard card_to_drop is: "+ card_to_drop);
         checkJokercards();
         checkWildcards();
         Iterator value = current_player_hand_str.iterator();

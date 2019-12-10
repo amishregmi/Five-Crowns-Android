@@ -186,6 +186,7 @@ public class Round {
     }
 
     public Card convertToControllerCard(String card_selected) {
+        System.out.println("PARAM RECEIVED IN CONVERTTOCONTROLLERCARD IS: "+ card_selected);
         Card card = new Card();
 
         if (card_selected.equals("j1") || card_selected.equals("j2") || card_selected.equals("j3")){
@@ -209,7 +210,7 @@ public class Round {
 
         }
 
-
+        System.out.println("CONTROLLER CARD IS: "+ card.cardToString());
         return card;
     }
 

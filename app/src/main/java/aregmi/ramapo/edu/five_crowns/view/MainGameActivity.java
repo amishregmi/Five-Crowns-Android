@@ -1,18 +1,26 @@
 package aregmi.ramapo.edu.five_crowns.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.os.SystemClock;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -45,6 +53,7 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     private ImageView imageview;
     private String help_reason = "";
     private TextView computer_move_explanation;
+    private Button save_game_button;
     //private Human human = new Human();
     //private Computer computer = new Computer();
 
@@ -67,6 +76,7 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         human_points_textview.setText("ROUND: " + round_num +"  HUMAN POINTS: " + game.getHumanTotalPoints());
         computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
         get_help_button = findViewById(R.id.get_help_button);
+        save_game_button = findViewById(R.id.save_game_button);
         //assemble_cards_button = findViewById(R.id.assemble_cards_button);
         log_button = findViewById(R.id.log_button);
         computer_move_explanation = findViewById(R.id.computer_move_explanation);
@@ -84,6 +94,28 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 Toast.makeText(getApplicationContext(), help_reason, Toast.LENGTH_LONG ).show();
+            }
+        });
+
+        save_game_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText file_name = new EditText(MainGameActivity.this);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainGameActivity.this);
+                dialog.setTitle("Enter file name")
+                        .setView(file_name)
+                        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String file = String.valueOf(file_name.getText());
+                                System.out.println("THE FILENAME IS: "+ file);
+                                saveGame(MainGameActivity.this, file);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create();
+
+                dialog.show();
             }
         });
 
@@ -130,6 +162,9 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
         }
 
+        human_points_textview.setText("ROUND: " + round_num +"  HUMAN POINTS: " + game.getHumanTotalPoints());
+        computer_points_textview.setText("COMPUTER POINTS: "+ game.getComputerTotalPoints());
+
         getCurrentRoundDetails();
 
 
@@ -161,12 +196,14 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     private void disableHumanButtons() {
         get_help_button.setEnabled(false);
 //        assemble_cards_button.setEnabled(false);
+        save_game_button.setEnabled(false);
     }
 
     private void enableHumanButtons(){
         get_help_button.setEnabled(true);
         //assemble_cards_button.setEnabled(true);
         //String reason;
+        save_game_button.setEnabled(true);
 
     }
 
@@ -191,6 +228,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         if (round.getComputerPlayer().goOut()){
             verify_goout_computer = true;
             Toast.makeText(getApplicationContext(), "COMPUTER WENT OUT!", Toast.LENGTH_LONG).show();
+            computer_move_explanation.setText(round.getComputerPlayer().getComputerMove()+" and went out");
+
         }
 
         System.out.println("VERIFY_GOOUT_HUMAN IS: "+ verify_goout_human);
@@ -215,6 +254,7 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             }
 
             else{
+                SystemClock.sleep(200);
                 read_from_file = false;
                 next_player = "Human";
                 setUpRound();
@@ -240,29 +280,35 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         view.setBackground(select);
         String card_selected = (String)view.getTag();
         Card controller_card_selected = round.convertToControllerCard(card_selected);
-        //System.out.println("CARD SELECTED IS: "+ card_selected);
+        System.out.println("CARD SELECTED IS: "+ card_selected);
+        String controller_card_selected_str = controller_card_selected.cardToString();
+        System.out.println("String controller card selected is: "+ controller_card_selected_str);
         //System.out.println("CONTROLLER CONVERSION IS:  " + controller_card_selected.cardToString());
 
-        if (controller_card_selected.cardToString().equals(Deck.getTopDrawCard().cardToString())){
+        if (controller_card_selected_str.equals(Deck.getTopDrawCard().cardToString())){
             //System.out.println("TOP DRAW CARD");
             round.getHumanPlayer().addCardToHand(Deck.takeTopDrawCard());
             human_picked_card = true;
             getCurrentRoundDetails();
         }
 
-        else if (controller_card_selected.cardToString().equals(Deck.getTopDiscardCard().cardToString())){
+        //TODO -> Some error here. Attempt to invoke virtual method cardToString() on null object reference.
+
+        else if(!Deck.getCurrentDiscardPile().isEmpty() && controller_card_selected_str.equals(Deck.getTopDiscardCard().cardToString())){
             round.getHumanPlayer().addCardToHand(Deck.takeTopDiscardCard());
             human_picked_card = true;
             getCurrentRoundDetails();
         }
 
+
         else{
             //TODO -> DROP CARD
             //human_picked_card = false;
             System.out.println("INSIDE DROP CARD");
+            save_game_button.setEnabled(false);
 
             getCurrentRoundDetails();
-            round.getHumanPlayer().dropCard(controller_card_selected.cardToString());
+            round.getHumanPlayer().dropCard(controller_card_selected_str);
             next_player = "Computer";
             getCurrentRoundDetails();
 
@@ -291,6 +337,8 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 else{
+                    SystemClock.sleep(200);
+
                     read_from_file = false;
                     next_player = "Computer";
                     setUpRound();
@@ -372,6 +420,52 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             index_pos++;
         }
 
+    }
+
+    private void saveGame(Context context, String file_name){
+        String saved_files_dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/saved_games";
+
+        file_name+= ".txt";
+        System.out.println("FILE NAME IS: "+ file_name);
+        //File directory = context.getFilesDir();
+        //new File(saved_files_dir).listFiles();
+        File file = new File(saved_files_dir, file_name);
+        try{
+            FileOutputStream write_stream = new FileOutputStream(file);
+            write_stream.write(writeGameDetails().getBytes());
+            write_stream.close();
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        System.exit(1);
+
+    }
+
+    private String writeGameDetails() {
+        StringBuilder save_details = new StringBuilder();
+        save_details.append("Round: ")
+                .append(round.getRoundNum()).append("\n").append("\n");
+        save_details.append("Computer: \n");
+        save_details.append("\tScore: ")
+                .append(game.getComputerTotalPoints()).append("\n");
+        save_details.append("\tHand: ")
+                .append(round.getComputerHand()).append("\n").append("\n");
+
+        save_details.append("Human: \n");
+        save_details.append("\tScore: ")
+                .append(game.getHumanTotalPoints()).append("\n");
+        save_details.append("\tHand: ")
+                .append(round.getHumanHand()).append("\n").append("\n");
+        save_details.append("Draw Pile: ")
+                .append(Deck.getCurrentDrawPile()).append("\n").append("\n");
+        save_details.append("Discard Pile: ")
+                .append(Deck.getCurrentDiscardPile()).append("\n").append("\n");
+        save_details.append("Next Player: ")
+                .append(next_player).append("\n");
+
+        String save_file_string = save_details.toString();
+        return save_file_string;
     }
 
 

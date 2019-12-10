@@ -63,7 +63,7 @@ public class StartActivity extends AppCompatActivity {
                 AlertDialog.Builder load_file = new AlertDialog.Builder(StartActivity.this);
                 load_file.setTitle("LOAD A GAME");
                 String saved_files_dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/saved_games";
-                //System.out.println("saved_files_dir is: "+ saved_files_dir);
+
                 final File[] all_files = new File(saved_files_dir).listFiles();
                 List<String> text_files = new ArrayList<String>();
                 //System.out.println("ALL_FILES LEN IS: "+ all_files.length);
