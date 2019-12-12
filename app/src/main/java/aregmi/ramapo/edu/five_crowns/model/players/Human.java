@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.model.players;
 
 import java.util.Iterator;
@@ -8,9 +15,18 @@ import aregmi.ramapo.edu.five_crowns.model.setup.Deck;
 
 public class Human extends  Player{
 
+    /**
+     * Constructor for Human class
+     */
+
     public Human(){
 
     }
+
+    /**
+     * Function that gives recommendation to Human on whether to pick from draw or discard pile
+     * @return String containing the recommendation
+     */
 
     public String pickCardHelp(){
         Card topDiscardCard = Deck.getTopDiscardCard();
@@ -18,12 +34,10 @@ public class Human extends  Player{
         String reason = "";
 
         if (checkIfJoker(topDiscardCard.cardToString())){
-            //reason = "I recommend picking from top of discard pile since it's a joker";
             reason = "Pick from discard pile since it's joker";
         }
 
         else if (checkIfWildcard(topDiscardCard.cardToString())){
-            //reason = "I recommend picking from top of discard pile since it's a wildcard";
             reason = "Pick from discard pile since it's wildcard";
         }
 
@@ -35,20 +49,15 @@ public class Human extends  Player{
             boolean check_if_goout = goOut();
 
             if (check_if_goout){
-                //reason = "I recommend picking from top of discard pile since it helps you assemble cards to goOut";
                 reason = "Pick from discard pile since you can goout";
             }
 
             else {
                 int points_after_adding_discard_card = getHandScore();
                 if (points_after_adding_discard_card <= points_before_adding_discard_card){
-                    //reason = "I recommend picking from top of discard pile since it helps you assemble cards to goOut";
                     reason = "Pick from discard pile since you can make better book/run combination";
-
                 }
                 else {
-                    //reason = "I recommend picking card from top of draw pile since top of discard pile is neither wildcard, nor a joker," +
-                     //       "and does not help form a better book/run combination or help you goOut";
                     reason = "Pick from draw pile since discard pile doesn't help in better combination";
                 }
             }
@@ -62,18 +71,20 @@ public class Human extends  Player{
         return reason;
     }
 
+    /**
+     * Function that recommends which card to drop to the human
+     * @return String containing the recommendation
+     */
+
     public String dropCardHelp(){
         //TODO -> SOME ERROR HERE
         String reason = "";
         Vector<Integer> points_after_drop = new Vector<Integer>();
         int current_index = 0;
         Vector<Card> temp = new Vector<Card>(current_player_hand);
-        //temp = current_player_hand;
         Vector<String> temp_str = new Vector<String>(current_player_hand_str);
-        //temp_str = current_player_hand_str;
 
         while (current_index < total_cards_in_hand){
-
             current_player_hand.remove(current_index);
             total_cards_in_hand--;
             current_player_hand_str.remove(current_index);
@@ -113,10 +124,17 @@ public class Human extends  Player{
 
     }
 
+    /*
+    Implemented in the UI
+     */
+
     public void pickCard(){
-
-
     }
+
+    /**
+     * Function to drop card from human's hand and add to discard pile
+     * @param card_to_drop, the card to be dropped from the hand
+     */
 
     public void dropCard(String card_to_drop){
         System.out.println("INSIDE human.dropCard card_to_drop is: "+ card_to_drop);
@@ -143,10 +161,8 @@ public class Human extends  Player{
         String suit = String.valueOf(card_to_drop.charAt(1));
         Card card = new Card(face, suit);
         Deck.pushToDiscardPile(card);
-
         checkJokercards();
         checkWildcards();
-
 
     }
 

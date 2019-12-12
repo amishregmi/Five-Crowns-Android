@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.model.players;
 
 import java.util.Collections;
@@ -26,6 +33,10 @@ public class Player {
     protected Vector<String> child_returning_smallest_sum = new Vector<String>();
 
 
+    /**
+     * Constructor for player class
+     */
+
     public Player(){
         total_cards_in_hand = 0;
         total_wildcards_num = 0;
@@ -34,12 +45,22 @@ public class Player {
         current_player_hand_str.clear();
     }
 
+    /**
+     * Function to add a card object to the current player's hand
+     * @param card, the card object to add
+     */
+
     public void addCardToHand(Card card){
         total_cards_in_hand++;
         current_player_hand.add(card);
         String current_card_str = card.cardToString();
         current_player_hand_str.add(current_card_str);
     }
+
+    /**
+     * To set the current player's hand
+     * @param hand, Vector of String containing the hand to set.
+     */
 
     public void setPlayerHand(Vector<String> hand){
         current_player_hand.clear();
@@ -64,6 +85,10 @@ public class Player {
         checkJokercards();
     }
 
+    /**
+     * To find and set number of jokers in the hand
+     */
+
     public void checkJokercards() {
         if (current_round_num != 0){
             total_jokers_num = 0;
@@ -77,6 +102,10 @@ public class Player {
             }
         }
     }
+
+    /**
+     * To find and set the total number of wildcards in the hand.
+     */
 
     public void checkWildcards() {
         if (current_round_num != 0){
@@ -93,23 +122,20 @@ public class Player {
         //System.out.println("TOTAL NUM OF WILDCARDS IS: "+ total_wildcards_num);
     }
 
-    public void setCurrentRoundNum(int roundNumber){
+    /**
+     * Function to set the current roundNumber
+     * @param roundNumber, the round number to set
+     */
 
-        //System.out.println("round number in player set to: "+ roundNumber);
+    public void setCurrentRoundNum(int roundNumber){
         current_round_num = roundNumber;
     }
 
-    public void printCurrentHand(){
-        //System.out.println("The current player hand is: ");
-        Iterator value = current_player_hand.iterator();
-        while (value.hasNext()){
-            Card current_card = (Card) value.next();
-            //System.out.println(current_card.cardToString());
-        }
-    }
-
-
-
+    /**
+     * Function to get a vector of string representation of any hand passed as argument
+     * @param present_hand_card, hand for which String vector representation is required
+     * @return, a vector of Strings representing the hand
+     */
 
     Vector<String> handToStr(Vector<Card> present_hand_card){
         Vector<String> present_hand_card_str = new Vector<String>();
@@ -122,6 +148,12 @@ public class Player {
         return present_hand_card_str;
     }
 
+    /**
+     * Function to get the sum of total number of wildcards and jokers in the hand
+     * @param present_hand, a vector of cards containing the hand for which to check
+     * @return, an integer containing total sum of all wildcards and jokers in the hand
+     */
+
     int totalApplicableWildcardsNum(Vector<Card> present_hand){
         int total_applicable_wildcards = 0;
         Vector<String> present_hand_str = handToStr(present_hand);
@@ -129,7 +161,6 @@ public class Player {
         Iterator value = present_hand_str.iterator();
 
         while (value.hasNext()){
-            //Card current_card = (Card) value.next();
             String current_card_str = (String) value.next();
             boolean check_if_joker = checkIfJoker(current_card_str);
             boolean check_if_wildcard = checkIfWildcard(current_card_str);
@@ -146,14 +177,15 @@ public class Player {
         return total_applicable_wildcards;
     }
 
-    public boolean checkIfWildcard(String current_card_str) {
-        //System.out.println("CURRENT WILDCARD IS: " + (current_round_num+2));
+    /**
+     * Function to check if the card passed as a parameter is a wildcard
+     * @param current_card_str, a string containing the card to check
+     * @return a boolean which is true if the parameter is a wildcard
+     */
 
-        //System.out.println("INSIDE CHECKIFWILDCARD ROUND NUMB IS "+ current_round_num);
+    public boolean checkIfWildcard(String current_card_str) {
         if (Character.isDigit(current_card_str.charAt(0))){
-            //System.out.println("INSIDE IF FIRST CHAR IS NUMBER");
             int number = Character.getNumericValue(current_card_str.charAt(0));
-            //System.out.println("NUMBER IS: "+ number);
             if (number == (current_round_num + 2)){
                 return true;
             }
@@ -178,6 +210,12 @@ public class Player {
         return false;
     }
 
+    /**
+     * Function to check if a card is a joker
+     * @param current_card_str, string representation of the card to be checked
+     * @return True if the card is a joker
+     */
+
     public boolean checkIfJoker(String current_card_str) {
         if ((current_card_str.charAt(0) == 'J') && Character.isDigit(current_card_str.charAt(1))){
             int number = Character.getNumericValue(current_card_str.charAt(1));
@@ -188,6 +226,12 @@ public class Player {
         }
         return false;
     }
+
+    /**
+     * Function to remove wildcards and jokers from a hand and return the remaining cards
+     * @param present_hand, the hand to remove wildcards and jokers from
+     * @return, the remaining hand
+     */
 
     Vector<String> handWithoutWildcards(Vector<Card> present_hand){
         Vector<String> present_hand_str = handToStr(present_hand);
@@ -205,15 +249,18 @@ public class Player {
             else if (check_if_wildcard){
                 value.remove();
             }
-
         }
 
         return present_hand_str;
     }
 
-    //TODO -> CHANGE TO PRIVATE
+    /**
+     * Function to check if a hand is a book
+     * @param handToCheck, a Vector of cards which is to be checked
+     * @return True if the hand is a book
+     */
 
-    public boolean checkBook (Vector<Card> handToCheck){
+    private boolean checkBook (Vector<Card> handToCheck){
         if (handToCheck.size() < 3){
             return false;
         }
@@ -246,8 +293,12 @@ public class Player {
 
     }
 
+    /**
+     * Function to check if a hand is a run
+     * @param current_hand_to_check, the hand to be checked
+     * @return True if the hand forms a run
+     */
 
-    //TODO -> CHANGE TO PRIVATE
     public boolean checkRun(Vector<Card> current_hand_to_check){
 
         if (current_hand_to_check.size() < 3){
@@ -256,14 +307,6 @@ public class Player {
 
         int total_applicable_wildcards = totalApplicableWildcardsNum(current_hand_to_check);
         Vector<String> temp = handWithoutWildcards(current_hand_to_check);
-
-        //System.out.println("TOTAL APPLICABLE WILDCARDS IS: "+ total_applicable_wildcards);
-        //System.out.println("HAND WITHOUT WILDCARDS : ");
-        //Iterator val = temp.iterator();
-        //while (val.hasNext()){
-        //    System.out.print((String)val.next()+ " ");
-        //}
-        //System.out.println("");
 
         if (temp.size() <= 1){
             return true;
@@ -343,6 +386,13 @@ public class Player {
         return false;
     }
 
+    /**
+     * Purpose: To find the maximum difference between the minimum and max face values of the vector of integers passed minus the face_values that fall between the min and max.
+     * @param face_values, Vector of Integers containing face values of the cards
+     * @param size, the size of the vector
+     * @return, an integer containing the difference calculated
+     */
+
     private int facesMaxDiff(Vector<Integer> face_values, int size) {
         int start = -5;
         int end = -5;
@@ -368,20 +418,36 @@ public class Player {
         return max_diff;
     }
 
-    public String pickCardHelp(){
+    /**
+     * Function overridden in base classes
+     *
+     */
+
+    public void pickCardHelp(){
         System.out.println("Virtual function pickCardHelp needs to be overwritten in child class");
-        return "";
+        //return "";
     }
+
+    /**
+     * Function overridden in base classes
+     */
 
     public void pickCard(){
         System.out.println("VIRTUAL FUNCTION PICKCARD");
     }
 
+    /**
+     * Function overridden in base classes
+     */
+
     public void dropCard(){
         System.out.println("VIRTUAL FUNCTION DROPCARD");
     }
 
-
+    /**
+     * Function to check if the Player can go out
+     * @return True if the player can go out
+     */
 
     public boolean goOut(){
         checkJokercards();
@@ -392,18 +458,17 @@ public class Player {
         bestBookRunCombination(current_player_hand);
 
         if (hand_score == 0){
-            //System.out.println("GOING OUT WITH");
-            //printCurrentHand();
-
             return true;
         }
-
         return false;
-
     }
 
-    private void bestBookRunCombination(Vector<Card> current_hand) {
+    /**
+     * Function to find the best book run combination of cards in the current hand.
+     * @param current_hand, the hand for which best combination is to be generated
+     */
 
+    private void bestBookRunCombination(Vector<Card> current_hand) {
         Vector<String> current_hand_str = handToStr(current_hand);
         Vector<Vector<Card>> listof_booksandruns_currenthand = generatePossibleCombinations(current_hand_str);
 
@@ -411,9 +476,6 @@ public class Player {
             int score = calculateSumOfCards(current_hand);
 
             if (score <= hand_score){
-                //min_branch.
-                //recursive_bookrun_hands.clear();
-                //recursive_bookrun_hands.add(current_hand_str);
                 Vector<String> temp = new Vector<String>();
                 Iterator value = current_player_hand_str.iterator();
                 while (value.hasNext()){
@@ -424,10 +486,7 @@ public class Player {
                 }
 
                 if (score < hand_score){
-                    //System.out.println("child returning smallest sum changed to");
                     child_returning_smallest_sum = temp;
-                    //System.out.println(child_returning_smallest_sum);
-                    //child_returning_smallest_sum
                     min_branch.clear();
                     min_branch.addAll(recursive_bookrun_hands);
                     System.out.println("MIN_BRANCH IS: "+ recursive_bookrun_hands);
@@ -436,7 +495,6 @@ public class Player {
                 hand_score = score;
 
             }
-            //return hand_score;
         }
 
         Iterator value = listof_booksandruns_currenthand.iterator();
@@ -444,11 +502,7 @@ public class Player {
         while (value.hasNext()){
             Vector<Card> hand_after_removal = new Vector<Card>();
             Vector<String> temp_hand_after_removal = new Vector<String>(current_hand_str);
-
             Vector<String> removed_hand = new Vector<String>();
-            //<Vector<String>> book_and_runs = new Vector<Vector<String>>();
-            //temp_hand_after_removal = current_hand_str;
-
             Vector<Card> inside = ((Vector<Card>) value.next());
             Iterator inside_it = inside.iterator();
 
@@ -472,19 +526,25 @@ public class Player {
             }
 
             recursive_bookrun_hands.add(removed_hand);
-            //TODO -> CHECK THIS. Without return
-            //add branch
             bestBookRunCombination(hand_after_removal);
             recursive_bookrun_hands.remove(removed_hand);
-            //remove branch
         }
-
-        //return 0;
     }
+
+    /**
+     * Function to return the best book/run branch combination
+     * @return
+     */
 
     public Vector<Vector<String>> getMinBranch(){
         return min_branch;
     }
+
+    /**
+     * Function to generate all possible combinations of cards in the current hand
+     * @param current_player_hand_str, a vector of String containing the current hand
+     * @return Vector of Vector of Cards where each Vector of cards is a possible combination
+     */
 
     private Vector<Vector<Card>> generatePossibleCombinations(Vector<String> current_player_hand_str) {
         Vector<Vector<String>> possible_combinations = new Vector<Vector<String>>();
@@ -644,6 +704,11 @@ public class Player {
         return listBooksAndRuns(possible_combinations);
     }
 
+    /**
+     * Function to return a list of books and runs in the current hand
+     * @param possible_combinations, a list of all possible combinations of cards in the current hand
+     * @return, Vector of Vectors where each inside vector contains card objects representing a book or run
+     */
     private Vector<Vector<Card>> listBooksAndRuns(Vector<Vector<String>> possible_combinations) {
         boolean checkbook, checkrun;
         Vector<Vector<Card>> list_books_and_runs = new Vector<Vector<Card>>();
@@ -678,6 +743,11 @@ public class Player {
         return list_books_and_runs;
     }
 
+    /**
+     * Function to calculate the sum of face values of cards in the current hand
+     * @param remaining_cards, the cards for which sum is to be calculated
+     * @return, sum of face values
+     */
 
     private int calculateSumOfCards(Vector<Card> remaining_cards) {
         int score = 0;
@@ -711,20 +781,23 @@ public class Player {
                 }
 
                 if (face == 'Q'){
-                    int_face -= 12;
+                    int_face -= 14;
                 }
 
                 if (face == 'K'){
                     int_face -= 7;
                 }
-
-                score += int_face;
+            score += int_face;
             }
-
         }
 
         return score;
     }
+
+    /**
+     * Function that returns a String of all available books and runs
+     * @return a String containing available books and runs
+     */
 
     public String printAvailableBooksandRuns(){
         String return_val = "";
@@ -746,32 +819,19 @@ public class Player {
         return return_val;
     }
 
+    /**
+     * Function to get the hand score
+     * @return integer containing the hand score
+     */
+
     public int getHandScore(){
         return hand_score;
     }
 
-    public static void main(String[] args){
-        Player player = new Player();
-        player.setCurrentRoundNum(1);
-        Card first = new Card("9", "C");
-        Card second = new Card ("9", "D");
-        Card third = new Card ("9", "H");
-        Card fourth = new Card ("J", "1");
-        player.addCardToHand(first);
-        player.addCardToHand(second);
-        player.addCardToHand(third);
-        player.addCardToHand(fourth);
-        player.checkJokercards();
-        player.checkWildcards();
-        player.goOut();
-        //System.out.println("TOTAL WILDCARD NUM: "+ player.total_wildcards_num);
-        //player.printCurrentHand();
-        //player.printCurrentHand();
-        player.printAvailableBooksandRuns();
-        System.out.println(player.goOut());
-
-
-    }
+    /**
+     * Function to get the player hand
+     * @return a String containing cards in the hand.
+     */
 
     public String getPlayerHandStr(){
         String hand = "";

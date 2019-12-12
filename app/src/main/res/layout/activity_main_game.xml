@@ -13,6 +13,7 @@
         android:layout_height="98dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:background="@color/colorPrimary"
         android:layout_marginTop="76dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,6 +28,7 @@
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView2"
+        android:background="@color/colorPrimary"
         android:layout_width="332dp"
         android:layout_height="98dp"
         android:layout_marginEnd="8dp"
@@ -46,6 +48,7 @@
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView3"
+        android:background="@color/colorAccent"
         android:layout_width="333dp"
         android:layout_height="101dp"
         android:layout_marginEnd="8dp"
@@ -65,6 +68,7 @@
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView4"
         android:layout_width="337dp"
+        android:background="@color/colorAccent"
         android:layout_height="103dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -135,10 +139,12 @@
         android:id="@+id/human_points_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="4"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:text="4"
+        android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -149,8 +155,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
-        android:text="5"
         android:layout_marginEnd="16dp"
+        android:text="5"
+        android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -186,10 +194,11 @@
     <TextView
         android:id="@+id/computer_move_explanation"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="36dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:textAlignment="center"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -200,10 +209,11 @@
     <Button
         android:id="@+id/save_game_button"
         android:layout_width="115dp"
-        android:layout_height="39dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
         android:text="Save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.model.setup;
 
 import android.os.Environment;
@@ -21,14 +28,28 @@ public class Game {
     private int round_number;
     private boolean read_from_file;
 
+    /**
+     * Constructor for Game class
+     */
     public Game(){
         human_player_points = 0;
         computer_player_points = 0;
     }
 
+    /**
+     * Function to set read_from_file member value
+     * @param readfromfile, boolean to be set
+     */
+
     public void setReadFromFile(boolean readfromfile){
         read_from_file = readfromfile;
     }
+
+    /**
+     * Function to start a new round
+     * @param round_num, the round number to start
+     * @return the round object
+     */
 
     public Round startRound(int round_num){
         Round round = new Round();
@@ -36,38 +57,59 @@ public class Game {
         return round;
     }
 
+    /**
+     * Function to keep track of total human points throughout the round
+     * @param points, the number of points to add for human player
+     */
 
     public void addHumanTotalPoints(int points){
         human_player_points += points;
     }
 
+    /**
+     * Function to keep track of total computer points
+     * @param points, the number of points to add for computer player
+     */
+
     public void addComputerTotalPoints(int points){
         computer_player_points += points;
     }
+
+    /**
+     *
+     * @return total points for human
+     */
 
     public int getHumanTotalPoints(){
         return human_player_points;
     }
 
+    /**
+     *
+     * @return total points for computer
+     */
+
     public int getComputerTotalPoints(){
         return computer_player_points;
     }
 
+    /**
+     * Function to read game details from a saved file
+     * @param file_name, the name of the file
+     * @return the Round object set from the read details
+     */
+
     public Round setRoundFromFile(String file_name){
-        //System.out.println("INSIDE SETROUNDFROMFILE");
         Round round = new Round();
         String filenamewithpath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/saved_games/"+file_name;
         try(BufferedReader br = new BufferedReader((new FileReader(filenamewithpath)))) {
-            //System.out.println("INSIDE TRY");
             String line;
             int round_number = -5;
             while ((line = br.readLine()) != null){
-                //System.out.println("INSIDE WHILE");
                 String[] splitStr = line.split("\\s+");
                 boolean round_num_found = false;
 
                 for (String oneword: splitStr){
-
                     if (oneword.equals("Round:")){
                         round_num_found = true;
                         continue;
@@ -81,20 +123,14 @@ public class Game {
                     }
 
                     if (oneword.equals("Draw")){
-                        //
                         String drawpilefile = line.substring(line.indexOf(":") + 1);
-                        //System.out.println("DRAW PILE FILE IS: "+ drawpilefile);
                         Vector<String> draw_pile_cards = extract_card_str(drawpilefile);
-
-                        //TODO -> REVERSE DONE IN C++ CODE
                         Deck.setDrawPile(draw_pile_cards);
                     }
 
                     else if (oneword.equals("Discard")){
                         String discardpilefile = line.substring(line.indexOf(":")+1);
-                        //System.out.println("DISCARD PILE FILE IS: "+ discardpilefile);
                         Vector<String> discard_pile_cards = extract_card_str(discardpilefile);
-                        //System.out.println("PARAMETER WITH WHICH CALLED: ");
                         Deck.setDiscardPile(discard_pile_cards);
                     }
 
@@ -174,6 +210,12 @@ public class Game {
         return round;
     }
 
+    /**
+     * Function to extract Vector containing strings of each card from a string containing all cards
+     * @param hand, the String containing all cards
+     * @return the Vector of String containing cards
+     */
+
     private Vector<String> extract_card_str(String hand) {
         Vector<String> cards = new Vector<>();
         String[] given_str = hand.split(" ");
@@ -185,6 +227,10 @@ public class Game {
         return cards;
     }
 
+    /**
+     * return round number
+     * @return
+     */
 
     public int getRoundNum(){
         return round_number;

@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.model.setup;
 
 import java.util.ArrayList;
@@ -23,6 +30,10 @@ public class Round {
     private int roundNumber;
     private boolean readFromFile;
 
+    /**
+     * Constructor for Round class.
+     */
+
     public Round(){
         total_players_num = 2;
         next_player_index = 0;
@@ -32,14 +43,28 @@ public class Round {
         computer_player = new Computer();
     }
 
+    /**
+     * function to set the readFromFile member to a boolean
+     * @param value, the boolean to be set
+     */
+
     public void setReadFromFile(boolean value){
         readFromFile = value;
-
     }
+
+    /**
+     *
+     * @return the current roundNumber
+     */
 
     public int getRoundNum(){
         return roundNumber;
     }
+
+    /**
+     * Function to set the roundnumber in the round, human, and computer
+     * @param round_number, the round number to be set
+     */
 
     public void setRoundNum(int round_number){
         roundNumber = round_number;
@@ -47,21 +72,45 @@ public class Round {
         computer_player.setCurrentRoundNum(roundNumber);
     }
 
+    /**
+     * Function to set the human player when passed in as parameter
+     * @param human, the object to be cloned
+     */
     public void setHumanPlayer(Human human){
         human_player = human;
     }
+
+    /**
+     *
+     * @return the current human player object
+     */
 
     public Human getHumanPlayer(){
         return human_player;
     }
 
+    /**
+     * Function to set the computer_player to object passed in as parameter
+     * @param computer, Computer object
+     */
+
     public void setComputerPlayer(Computer computer){
         computer_player = computer;
     }
 
+    /**
+     *
+     * @return the current Computer player object
+     */
+
     public Computer getComputerPlayer(){
         return computer_player;
     }
+
+    /**
+     * Function to keep track of the next player and set it when round starts
+     * @param next_player_name, the name of the next player at the start of the round
+     */
 
     public void setPlayerList(String next_player_name){
         playersList = new Vector<Player>();
@@ -110,48 +159,69 @@ public class Round {
 
     }
 
+    /**
+     * Function to deal cards for the current round.
+     */
+
     public void dealForRound(){
         Vector<Card> dealtCards = Deck.dealCards(roundNumber);
         Iterator value = dealtCards.iterator();
 
         if (!dealtCards.isEmpty()){
-
             for (int i = 0 ; i < (dealtCards.size() -1); i +=2 ){
-                //playersList.elementAt(next_player_index).addCardToHand(dealtCards.elementAt(i));
                 Card cardtoadd = dealtCards.get(i);
                 playersList.get(next_player_index)
                         .addCardToHand(cardtoadd);
-                //playersList.elementAt(next_player_index).setCurrentRoundNum(roundNumber);
                 playersList.get(next_player_index).setCurrentRoundNum(roundNumber);
                 next_player_index = (next_player_index + 1) % total_players_num;
-                //playersList.elementAt(next_player_index).addCardToHand(dealtCards.elementAt(i+1));
                 playersList.get(next_player_index).addCardToHand(dealtCards.get(i+1));
-                //playersList.elementAt(next_player_index).setCurrentRoundNum(roundNumber);
                 playersList.get(next_player_index).setCurrentRoundNum(roundNumber);
                 next_player_index = (next_player_index+1) % total_players_num;
-
             }
-
         }
-
-
     }
+
+    /**
+     *
+     * @return a String containing the current Draw pile
+     */
 
     public String getDrawPile(){
         return Deck.getCurrentDrawPile();
     }
 
+    /**
+     *
+     * @return a String containing the current Discard pile
+     */
+
     public String getDiscardPile(){
         return Deck.getCurrentDiscardPile();
     }
+
+    /**
+     *
+     * @return String containing the current human hand.
+     */
 
     public String getHumanHand(){
         return human_player.getPlayerHandStr();
     }
 
+    /**
+     *
+     * @return String containing the current computer hand.
+     */
+
     public String getComputerHand(){
         return computer_player.getPlayerHandStr();
     }
+
+    /**
+     * Function to convert a string containing cards as in the controller to strings as in the drawable
+     * @param givenString, string containing cards corresponding to controller representation
+     * @return List of String containing the cards as stored in drawable
+     */
 
     public List<String> convertToDrawableString(String givenString) {
         String[] splitStr = givenString.split("\\s+");
@@ -160,11 +230,8 @@ public class Round {
         cards.clear();
 
         for (String one: splitStr){
-            //System.out.println(one);
             if (one.equals("J1") || one.equals("J2") || one.equals("J3")){
-                //System.out.println("INSIDE IF");
                 combined += one.toLowerCase()+ " ";
-                //System.out.println(combined);
             }
             else{
                 if (!one.isEmpty()){
@@ -177,7 +244,6 @@ public class Round {
         }
 
         splitStr = combined.split("\\s+");
-
         for (String one: splitStr){
             cards.add(one);
         }
@@ -185,12 +251,16 @@ public class Round {
         return cards;
     }
 
+    /**
+     * Function to convert a drawable card to card as stored in controller
+     * @param card_selected, a string containing the card to be converted
+     * @return corresponding Card object.
+     */
+
     public Card convertToControllerCard(String card_selected) {
-        System.out.println("PARAM RECEIVED IN CONVERTTOCONTROLLERCARD IS: "+ card_selected);
         Card card = new Card();
 
         if (card_selected.equals("j1") || card_selected.equals("j2") || card_selected.equals("j3")){
-            //System.out.println("INSIDE IF");
             card_selected = card_selected.toUpperCase();
             char face = card_selected.charAt(0);
             char suit = card_selected.charAt(1);
@@ -213,6 +283,11 @@ public class Round {
         System.out.println("CONTROLLER CARD IS: "+ card.cardToString());
         return card;
     }
+
+    /**
+     *
+     * @return String containing the next player
+     */
 
     public String getNextPlayer(){
         return player_names[next_player_index];

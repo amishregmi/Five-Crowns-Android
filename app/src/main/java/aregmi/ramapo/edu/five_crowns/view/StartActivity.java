@@ -1,3 +1,11 @@
+
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.view;
 
 import android.content.DialogInterface;
@@ -99,6 +107,12 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *
+     * @param user_cointoss_selection, string containing "Heads" or "Tails" that user selected
+     * @return String containing the player that won the coin toss.
+     */
+
     private String chooseTossWinner(String user_cointoss_selection) {
         Random random = new Random();
         int rand = random.nextInt(2);
@@ -121,7 +135,6 @@ public class StartActivity extends AppCompatActivity {
             winner = "Computer";
         }
 
-        //TODO -> MAKE THIS RANDOM
         return winner;
     }
 

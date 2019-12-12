@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.model.setup;
 
 import android.content.pm.PackageManager;
@@ -12,16 +19,21 @@ public class Deck {
     private static Vector<Card> drawPile = new Vector<Card>();
     private static Vector<Card> discardPile = new Vector<Card>();
 
+    /**
+     * constructor for Deck
+     */
     public Deck(){
         resetDeck();
     }
+
+    /**
+     * Function to clear draw and discard piles and add all cards to draw pile in random order
+     */
 
     static private void resetDeck() {
         System.out.println("reset Deck() called");
         drawPile.clear();
         discardPile.clear();
-        //C, D, H,S done
-        //
 
         final String[] suits = {"S", "C", "D", "H", "T"};
         final String[] faces = { "3", "4", "5", "6", "7", "8", "9", "X", "J", "Q", "K" };
@@ -44,30 +56,26 @@ public class Deck {
 
         Collections.shuffle(drawPile);
         Collections.shuffle(discardPile);
-
     }
+
+    /**
+     * Function to place cards from draw pile to a Vector of cards and return that so it can be distributed to two players
+     * @param roundNumber, the current round number to deal cards for
+     * @return a Vector containing card objects of the cards to deal
+     */
 
 
     static public Vector<Card> dealCards(int roundNumber){
         System.out.println("dealCards in deck called");
         int current_round_par = roundNumber;
         resetDeck();
-
-        //System.out.println("After resetDeck()");
         String draw_pile = getCurrentDrawPile();
-        //System.out.println("IN DECK CLASS");
-        //System.out.println("CURRENT draw_pile is: ");
-        //System.out.println(draw_pile);
         String discard_pile = getCurrentDiscardPile();
-        //System.out.println("CURRENT discard_pile is: ");
-        //System.out.println(discard_pile);
 
         Vector<Card> cardstodeal = new Vector<Card>();
         int total_cards_per_player = (2+roundNumber)*2;
         for (int i = 0 ; i < total_cards_per_player; i++){
             if (!drawPile.isEmpty()){
-                //System.out.println("Adding element to cardstodeal: ");
-                //System.out.println(drawPile.firstElement().cardToString());
                 cardstodeal.add(drawPile.firstElement());
                 drawPile.removeElementAt(0);
             }
@@ -81,6 +89,11 @@ public class Deck {
         return cardstodeal;
     }
 
+    /**
+     *
+     * @return Card object at top of discard pile
+     */
+
     static public Card getTopDiscardCard(){
         //System.out.println("GET TOP DISCARD CARD IN DECK CALLED");
         if (!discardPile.isEmpty()){
@@ -89,6 +102,11 @@ public class Deck {
         return null;
     }
 
+    /**
+     *
+     * @return card object at top of draw pile
+     */
+
     static public Card getTopDrawCard(){
         //System.out.println("GET TOP DRAW CARD IN DECK CALLED");
         if (!drawPile.isEmpty()){
@@ -96,6 +114,11 @@ public class Deck {
         }
         return null;
     }
+
+    /**
+     * Function to remove first element of discard pile
+     * @return card object at top of discard pile
+     */
 
     static public Card takeTopDiscardCard(){
         //System.out.println("TAKE TOP DISCARD CARD IN DECK CALLED");
@@ -107,8 +130,12 @@ public class Deck {
         return null;
     }
 
+    /**
+     * Function to remove first element of draw pile
+     * @return card object at top of draw pile
+     */
+
     static public Card takeTopDrawCard(){
-        //System.out.println("TAKE TOP DRAW CARD IN DECK CALLED");
         if (!drawPile.isEmpty()){
             Card topcard = drawPile.firstElement();
             drawPile.removeElementAt(0);
@@ -117,11 +144,20 @@ public class Deck {
         return null;
     }
 
+    /**
+     * Function to add a card to top of discard pile
+     * @param card, the card to add
+     */
+
     static public void pushToDiscardPile(Card card)
     {
-        //System.out.println("PUSH TO DISCARD PILE CALLED DECK");
         discardPile.add(0, card);
     }
+
+    /**
+     * Function to set the draw pile
+     * @param draw_Pile, a vector of strings containing cards to set draw pile to
+     */
 
     static public void setDrawPile(Vector<String> draw_Pile){
         drawPile.clear();
@@ -133,6 +169,11 @@ public class Deck {
             drawPile.add(card);
         }
     }
+
+    /**
+     * Function to set the discard pile
+     * @param discard_Pile, a vector of strings containing cards to set discard pile to
+     */
 
     static public void setDiscardPile(Vector<String> discard_Pile){
         //System.out.print("SET DISCARD PILE CALLED with parameter: ");
@@ -147,6 +188,11 @@ public class Deck {
         //System.out.println("DISCARD PILE SET IS: "+ getCurrentDiscardPile());
     }
 
+    /**
+     *
+     * @return String containing the current draw pile cards
+     */
+
     static public String getCurrentDrawPile(){
         String current_draw_pile = "";
         Iterator iterator = drawPile.iterator();
@@ -160,6 +206,11 @@ public class Deck {
         return current_draw_pile;
     }
 
+    /**
+     *
+     * @return, String containing current discard pile cards
+     */
+
     static public String getCurrentDiscardPile(){
         //System.out.println("GET CURRENT DISCARD PILE CALLED");
         String current_discard_pile = "";
@@ -171,7 +222,5 @@ public class Deck {
         }
         return current_discard_pile;
     }
-
-
 
 }

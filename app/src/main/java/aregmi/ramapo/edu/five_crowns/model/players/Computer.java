@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.model.players;
 
 import java.util.Vector;
@@ -10,21 +17,26 @@ public class Computer extends Player{
 
     private String computer_move = "";
 
-    public Computer(){
+    /**
+     * Constructor for Computer
+     */
 
+    public Computer(){
     }
+
+    /**
+     * To decide whether to pick from draw or discard pile and add the card to the hand.
+     */
 
     public void pickCard(){
         computer_move = "";
         Card topDiscardCard = Deck.getTopDiscardCard();
         Card topDrawCard = Deck.getTopDrawCard();
-
         String reason;
 
         if (checkIfJoker(topDiscardCard.cardToString())){
             reason = "Computer picked from top of Discard pile because the card is a joker";
             addCardToHand(topDiscardCard);
-            //TODO -> Added this from c++
             Deck.takeTopDiscardCard();
             computer_move += "Computer picked "+ topDiscardCard.cardToString()+ " from discard pile";
         }
@@ -76,6 +88,10 @@ public class Computer extends Player{
         dropCard();
     }
 
+    /**
+     * To drop the card from the current hand
+     */
+
     public void dropCard(){
         String reason = "";
         //System.out.println("Before dropping card, ");
@@ -101,35 +117,20 @@ public class Computer extends Player{
             total_cards_in_hand++;
             current_index++;
         }
-
-        //System.out.println("INSIDE COMPUTER CLASS");
-        //for (int one: points_after_drop){
-         //   System.out.println(one);
-        //}
-
-        //printCurrentHand();
-
-        //random minimum value
         int min = 50000;
         int required_index = min;
 
         for (int i = 0; i < points_after_drop.size(); i++){
-            //System.out.println("INSIDE FOR LOOP");
 
             if (!(checkIfJoker(current_player_hand_str.get(i)) || checkIfWildcard(current_player_hand_str.get(i)))){
-                //System.out.println("INSIDE OUTER IF");
-                //System.out.println("POINTS AFTER DROP "+ points_after_drop.get(i));
-                //System.out.println("MIN IS: "+ min);
+
                 int compare_val = points_after_drop.get(i);
                 if (compare_val < min){
-                    //System.out.println("INSIDE IF ");
                     reason = "Computer is dropping card at index "+i + " because it's not wildcard/joker and helps reduce sum of cards in hand after forming best book and run combination";
 
                     if (points_after_drop.get(i) == 0){
                         reason = "Computer is dropping card at index "+ i + " because the player can go out";
                     }
-
-                    //min = points_after_drop.get(i);
                     min = points_after_drop.get(i);
                     required_index = i;
 
@@ -141,10 +142,6 @@ public class Computer extends Player{
 
         computer_move += " and dropped "+ current_player_hand_str.get(required_index);
 
-
-        //System.out.println(reason);
-        //System.out.println("REQUIRED INDEX IS: "+ required_index);
-        //Card card_dropped = current_player_hand.elementAt(required_index);
         Card card_dropped = current_player_hand.get(required_index);
         current_player_hand.removeElementAt(required_index);
         current_player_hand_str.removeElementAt(required_index);
@@ -153,21 +150,13 @@ public class Computer extends Player{
         printCurrentHand();
     }
 
+    /**
+     *
+     * @return String containing the card computer picked and dropped explanation
+     */
+
     public String getComputerMove(){
         return computer_move;
-    }
-
-    public static void main(String[] args){
-        Computer computer = new Computer();
-        Card first = new Card("4", "H");
-        Card second = new Card("X", "H");
-        Card third = new Card("J", "2");
-        computer.addCardToHand(first);
-        computer.addCardToHand(second);
-        computer.addCardToHand(third);
-
-
-
     }
 
 }

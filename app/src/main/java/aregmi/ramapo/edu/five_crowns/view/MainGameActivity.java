@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.view;
 
 import android.content.Context;
@@ -42,7 +49,6 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     private TextView human_points_textview;
     private TextView computer_points_textview;
     private Button get_help_button;
-    private Button assemble_cards_button;
     private Button log_button;
     private boolean verify_goout_human;
     private boolean verify_goout_computer;
@@ -56,8 +62,6 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
     private TextView computer_move_explanation;
     private Button save_game_button;
     private String all_log_details = "";
-    //private Human human = new Human();
-    //private Computer computer = new Computer();
     private String log_dir;
     private String log_file_name;
     private File file;
@@ -85,10 +89,6 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         //assemble_cards_button = findViewById(R.id.assemble_cards_button);
         log_button = findViewById(R.id.log_button);
         computer_move_explanation = findViewById(R.id.computer_move_explanation);
-
-
-//        FileOutputStream write_stream = new FileOutputStream(file);
-
 
         get_help_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,8 +163,12 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void setUpRound() {
+    /**
+     * function called to start a round, extract values from the model and call the function to update the UI.
+     *
+     */
 
+    private void setUpRound() {
 
         if (!read_from_file){
             round = game.startRound(round_num);
@@ -201,54 +205,51 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
         getCurrentRoundDetails();
 
-
-
         if (next_player.equals("Computer")) {
             makeComputerMove();
-            //makeHumanMove();
         }
 
         else if (next_player.equals("Human")) {
             makeHumanMove();
-            //makeComputerMove();
         }
 
         if (verify_goout_computer && !verify_goout_human){
-            //makeHumanMove();
             game.addHumanTotalPoints(round.getHumanPlayer().getHandScore());
-
         }
 
         else if (!verify_goout_computer && verify_goout_human){
-            //makeComputerMove();
             game.addComputerTotalPoints(round.getComputerPlayer().getHandScore());
-
         }
 
         getCurrentRoundDetails();
     }
 
+    /**
+     * function to disable human's button's during computer's move
+     */
+
     private void disableHumanButtons() {
         get_help_button.setEnabled(false);
-//        assemble_cards_button.setEnabled(false);
         save_game_button.setEnabled(false);
     }
 
+    /**
+     * function to enable buttons during human's move
+     */
+
     private void enableHumanButtons(){
         get_help_button.setEnabled(true);
-        //assemble_cards_button.setEnabled(true);
-        //String reason;
         save_game_button.setEnabled(true);
-
     }
 
+    /**
+     * function called to call model function to make the computer player's move and update values from the model.
+     */
+
     private void makeComputerMove(){
-        //all_log_details += writeLogDetails();
         all_log_details += writeLogDetails();
         getCurrentRoundDetails();
         disableHumanButtons();
-
-        System.out.println("INSIDE MAKECOMPUTERMOVE");
 
         if (!verify_goout_computer){
             round.getComputerPlayer().pickCard();
@@ -259,11 +260,9 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         all_log_details += round.getComputerPlayer().getComputerMove()+"\n\n";
         all_log_details += "After dropping card, hand is: "+ round.getComputerPlayer().getPlayerHandStr()+"\n\n";
 
-        //getCurrentRoundDetails();
         next_player = "Human";
         human_picked_card = false;
         getCurrentRoundDetails();
-
 
         if (round.getComputerPlayer().goOut()){
             verify_goout_computer = true;
@@ -276,10 +275,7 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         all_log_details+= round.getComputerPlayer().getMinBranch().toString()+"\n\n";
 
 
-        System.out.println("VERIFY_GOOUT_HUMAN IS: "+ verify_goout_human);
-
         if (!verify_goout_human){
-            System.out.println("INSIDE MAKEHUMANMOVE");
             makeHumanMove();
         }
 
@@ -307,42 +303,38 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    /**
+     * function called when it's human's turn to update the string to save in the log file
+     */
+
     private void makeHumanMove() {
-        //all_log_details+= writeLogDetails();
         enableHumanButtons();
-        //TODO -> Disable clickable from human hand. Allow clickable from top of draw pile and discard pile
         getCurrentRoundDetails();
         all_log_details += writeLogDetails();
-        //makeComputerMove();
-
     }
 
 
-    //TODO -> CHANGE THIS
+    /**
+     * Function called when a card is clicked
+     * @param view, the current view.
+     */
     @Override
     public void onClick(View view){
         Drawable select = getResources().getDrawable(R.drawable.selected);
         view.setBackground(select);
         String card_selected = (String)view.getTag();
         Card controller_card_selected = round.convertToControllerCard(card_selected);
-        System.out.println("CARD SELECTED IS: "+ card_selected);
         String controller_card_selected_str = controller_card_selected.cardToString();
-        System.out.println("String controller card selected is: "+ controller_card_selected_str);
-        //System.out.println("CONTROLLER CONVERSION IS:  " + controller_card_selected.cardToString());
-
 
         if (controller_card_selected_str.equals(Deck.getTopDrawCard().cardToString())){
-            //System.out.println("TOP DRAW CARD");
-            all_log_details += "Human picked "+ controller_card_selected_str+"\n";
+            all_log_details += "Human picked "+ controller_card_selected_str+"from draw pile \n";
             round.getHumanPlayer().addCardToHand(Deck.takeTopDrawCard());
             human_picked_card = true;
             getCurrentRoundDetails();
         }
 
-        //TODO -> Some error here. Attempt to invoke virtual method cardToString() on null object reference.
-
         else if(!Deck.getCurrentDiscardPile().isEmpty() && controller_card_selected_str.equals(Deck.getTopDiscardCard().cardToString())){
-            all_log_details += "Human picked "+ controller_card_selected_str+"\n";
+            all_log_details += "Human picked "+ controller_card_selected_str+" from discard pile \n";
             round.getHumanPlayer().addCardToHand(Deck.takeTopDiscardCard());
             human_picked_card = true;
             getCurrentRoundDetails();
@@ -350,18 +342,13 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
 
         else{
-            //TODO -> DROP CARD
-            //human_picked_card = false;
-            System.out.println("INSIDE DROP CARD");
             save_game_button.setEnabled(false);
-
             getCurrentRoundDetails();
             round.getHumanPlayer().dropCard(controller_card_selected_str);
             all_log_details += "Human dropped "+ controller_card_selected_str+"\n";
             all_log_details+= "After dropping card, human hand is: "+ round.getHumanPlayer().getPlayerHandStr()+"\n\n";
-
-
             next_player = "Computer";
+
             getCurrentRoundDetails();
 
             if (round.getHumanPlayer().goOut()){
@@ -404,38 +391,39 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    /**
+     * function to extract all the details of the current game state from the model.
+     *
+     */
 
     private void getCurrentRoundDetails() {
 
-        //List<String> draw_pile = convertToDrawableString(round.getDrawPile());
         List<String> draw_pile = round.convertToDrawableString(round.getDrawPile());
         List<String> discard_pile = round.convertToDrawableString(round.getDiscardPile());
-
-
         List<String> human_hand = round.convertToDrawableString(round.getHumanHand());
         List<String> computer_hand = round.convertToDrawableString(round.getComputerHand());
-
         LinearLayout linearLayout1 = (LinearLayout) findViewById(R.id.computer_hand_linearlayout);
         linearLayout1.removeAllViews();
         addCardToView(linearLayout1, computer_hand, "Computer");
-
         linearLayout1 = (LinearLayout) findViewById(R.id.discard_pile_linearlayout);
         linearLayout1.removeAllViews();
         addCardToView(linearLayout1, discard_pile, "DiscardPile");
-
         linearLayout1 = (LinearLayout) findViewById(R.id.draw_pile_linearlayout);
         linearLayout1.removeAllViews();
         addCardToView(linearLayout1, draw_pile, "DrawPile");
-
         linearLayout1 = (LinearLayout) findViewById(R.id.human_hand_linearlayout);
         linearLayout1.removeAllViews();
         addCardToView(linearLayout1, human_hand, "Human");
-
-
     }
 
-    private void addCardToView(LinearLayout linearLayout, List<String> cards_to_display, String card_belonging_to) {
+    /**
+     * Function to add cards to the screen in their linear layouts within scroll views.
+     * @param linearLayout, the layout to add the cards to
+     * @param cards_to_display, list of cards to add
+     * @param card_belonging_to, whether the card belongs to Human, Computer, DrawPile or DiscardPile to set clickable properties.
+     */
 
+    private void addCardToView(LinearLayout linearLayout, List<String> cards_to_display, String card_belonging_to) {
         int index_pos = 0;
 
         for (String onecard : cards_to_display){
@@ -459,24 +447,25 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             }
 
             else if (card_belonging_to.equals("DrawPile") && index_pos == 0 && human_picked_card == false && next_player.equals("Human")){
-                //System.out.println("INSIDE HERE");
                 imageview.setClickable(true);
                 imageview.setOnClickListener(this);
             }
 
             else if (card_belonging_to.equals("DiscardPile") && index_pos == 0 && human_picked_card == false && next_player.equals("Human")){
-                //System.out.println("INSIDE HERE 2");
                 imageview.setClickable(true);
                 imageview.setOnClickListener(this);
             }
-//            else if (card_belonging_to.equals(""))
 
             linearLayout.addView(imageview);
-
             index_pos++;
         }
 
     }
+
+    /**
+     * The function writes the string storing all details of the current round and game state to a log file, which can be read when the user checks the log.
+     * @param context, current context
+     */
 
     private void saveGameLog(Context context){
         try{
@@ -487,8 +476,12 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         } catch (Exception ex){
             ex.printStackTrace();
         }
-
     }
+
+    /**
+     * Function that keeps a log of all the details of the game in a string.
+     * @return String containing the current log_details
+     */
 
     private String writeLogDetails() {
         StringBuilder log_details = new StringBuilder();
@@ -508,19 +501,21 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
             log_details.append("COMPUTER HAND: \t");
             log_details.append(round.getComputerPlayer().getPlayerHandStr()).append("\n");
         }
-        //log_details.append(Deck.get)
-
         String log_detailss = log_details.toString();
         return log_detailss;
     }
+
+    /**
+     * Function to save the current game
+     * @param context, current context
+     * @param file_name, the name of the file to save the game in, provided by the user.
+     */
 
     private void saveGame(Context context, String file_name){
         String saved_files_dir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/saved_games";
 
         file_name+= ".txt";
         System.out.println("FILE NAME IS: "+ file_name);
-        //File directory = context.getFilesDir();
-        //new File(saved_files_dir).listFiles();
         File file = new File(saved_files_dir, file_name);
         try{
             FileOutputStream write_stream = new FileOutputStream(file);
@@ -533,6 +528,11 @@ public class MainGameActivity extends AppCompatActivity implements View.OnClickL
         System.exit(1);
 
     }
+
+    /**
+     * Function called when the user saves the current game
+     * @return String containing all the details to be saved.
+     */
 
     private String writeGameDetails() {
         StringBuilder save_details = new StringBuilder();

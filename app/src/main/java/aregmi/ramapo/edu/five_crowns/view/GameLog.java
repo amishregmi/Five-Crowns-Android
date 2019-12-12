@@ -1,3 +1,10 @@
+/************************************************************
+ * Name: Amish Regmi                                        *
+ * Project: Project 3, Five Crowns Android                  *
+ * Class: OPL Fall 19                                       *
+ * Date: 12/11/2019                                         *
+ ************************************************************/
+
 package aregmi.ramapo.edu.five_crowns.view;
 
 import android.os.Environment;
@@ -29,6 +36,8 @@ public class GameLog extends AppCompatActivity {
 
         text_view.setMovementMethod(new ScrollingMovementMethod());
 
+        text_view.setText("");
+
         File file = new File(filenamewithpath);
         StringBuilder text = new StringBuilder();
 
@@ -46,5 +55,7 @@ public class GameLog extends AppCompatActivity {
 
         String result = text.toString();
         text_view.setText(result);
-    }
+
+
+        }
 }
